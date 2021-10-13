@@ -1,0 +1,3 @@
+file,snr,maxSilence,minimumAudioLength,energyWindow4Analysis,pitchWindow4Analysis,featurewindowsize,featurewindowshift,minNFeaturesInCluster,nClasses,nhidden,minibatch,nEpochs,accuracy,precision,recall,f1,tp,tn,fp,fn,kappa,kappa_lk,kappa_f
+C:\Users\Utente\Ricerca\Experiments\NINA Infant Cry\SUB\SUB3\SUB3.wav,3.12869271,0.5,5,0.1,0.1,0.3,0.1,5,2,3,150,2,0.874735739,0.845893256,0.926366131,0.88430268,432726,357980,78835,34396,0.748359057,Substantial,Good
+C:\Users\Utente\Ricerca\Experiments\NINA Infant Cry\SUB\SUB3\SUB3.wav,3.1286927103054554,0.5,5.0,0.1,0.1,0.3,0.1,5,2,3,150,2,0.8698570807478839,0.8445532001317162,0.9169253428440536,0.8792525298350667,428316,357980,78835,38806,0.7386442940421434,Substantial,Good

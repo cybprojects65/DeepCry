@@ -1,0 +1,2620 @@
+<operators name="core">
+     
+  <!-- Weka operators -->
+
+  <factory class = "com.rapidminer.tools.WekaOperatorFactory"/>
+
+  <!-- Main Operators -->
+
+  <operator
+     name        = "OperatorChain"
+     class       = "com.rapidminer.operator.SimpleOperatorChain"
+     description = "A chain of operators that is subsequently applied."
+     icon        = "chain"/>
+
+  <operator 
+     name        = "ModelApplier"     
+     class       = "com.rapidminer.operator.ModelApplier"
+     description = "Applies a model to an example set. This might be a prediction or another data transformation model."
+     icon        = "model_applier"/>
+          
+  <operator 
+     name        = "ModelUpdater"     
+     class       = "com.rapidminer.operator.ModelUpdater"
+     description = "Updates a model according to an example set. Please note that this operator can only be used for updatable models, otherwise an error will be shown."
+     icon        = "model_applier"/>
+
+  <operator 
+     name        = "ModelGrouper"     
+     class       = "com.rapidminer.operator.ModelGrouper"
+     description = "Groups the input models into a single combined model which might be necessary for example for applying preprocessing models."
+	 icon        = "link_add"/>          
+
+  <operator 
+     name        = "ModelUngrouper"     
+     class       = "com.rapidminer.operator.ModelUngrouper"
+     description = "Ungroups a previously grouped model into the single models which might then be handled on their own."
+	 icon        = "link_delete"/>     
+
+               
+  <!-- Core -->
+     
+  <operator 
+     name        = "Process" 
+     class       = "com.rapidminer.operator.ProcessRootOperator"
+     description = "The root operator chain, which needs to be the outer most operator of any process."
+     icon        = "chain"
+     group       = "Core"/>
+          
+  <operator 
+     name        = "Experiment" 
+     class       = "com.rapidminer.operator.ProcessRootOperator"
+     description = "The root operator chain, which needs to be the outer most operator of any experiment."
+     icon        = "chain"
+     deprecation = "Please use the operator 'Process' instead."
+     group       = "Core"/>
+     
+  <operator 
+     name        = "MemoryCleanUp"     
+     class       = "com.rapidminer.operator.MemoryCleanUp"
+     description = "Frees unused memory. Might be useful after large preprocessing chains with a lot of (now) unused views or even data copies. Can be very useful after the data set was (again) materialized in memory."
+     icon        = "clean_up"
+     group       = "Core"/>          
+
+  <operator 
+     name        = "MaterializeDataInMemory"     
+     class       = "com.rapidminer.operator.preprocessing.MaterializeDataInMemory"
+     description = "Creates a fresh and clean copy of the data. Might be useful after large preprocessing chains with a lot of views or even data copies, especially in combination with a memory clean up operation followed afterwards."
+     icon        = "materialize"
+     group       = "Core"/>  
+     
+  <operator
+     name        = "IOConsumer"
+     class       = "com.rapidminer.operator.IOConsumeOperator"
+     description = "This operators simply consumes some unused outputs."
+     icon        = "io_consumer"
+     group       = "Core.Objects"/>
+
+  <operator
+     name        = "IOMultiplier"
+     class       = "com.rapidminer.operator.IOMultiplyOperator"
+     description = "This operators simply multiplies selected input objects."
+     icon        = "io_multiplier"
+     group       = "Core.Objects"/>
+
+  <operator
+     name        = "IOSelector"
+     class       = "com.rapidminer.operator.IOSelectOperator"
+     description = "This operators simply selects one of the input objects of the specified type and brings it to the front so that following operators will work on this object."
+     icon        = "io_selector"
+     group       = "Core.Objects"/>
+
+  <operator
+     name        = "IOStorer"
+     class       = "com.rapidminer.operator.IOStorageOperator"
+     description = "This operators stores one of the input objects of the specified type into the process object storage."
+     icon        = "io_storer"
+     group       = "Core.Objects"/>
+
+  <operator
+     name        = "IORetriever"
+     class       = "com.rapidminer.operator.IORetrievalOperator"
+     description = "This operators retrieves an objects of the specified type which was previously stored into the process object storage."
+     icon        = "io_retriever"
+     group       = "Core.Objects"/>
+          
+  <operator
+     name        = "CommandLineOperator"
+     class       = "com.rapidminer.operator.CommandLineOperator"
+     description = "This operator simply executes a command in a shell of the underlying operating system, basically any system command or external program."
+     icon        = "command"
+     group       = "Core"/>
+     
+  <operator
+     name        = "MacroDefinition"
+     class       = "com.rapidminer.operator.MacroDefinitionOperator"
+     description = "This operator can be used to define arbitrary macros which can be used by %{my_macro} in parameter values."
+     icon        = "macro"
+     group       = "Core.Macros"/>
+     
+  <operator
+     name        = "SingleMacroDefinition"
+     class       = "com.rapidminer.operator.SingleMacroDefinitionOperator"
+     description = "This operator can be used to define a single arbitrary macro which can be used by %{my_macro} in parameter values."
+     icon        = "macro"
+     group       = "Core.Macros"/>
+
+  <operator
+     name        = "DataMacroDefinition"
+     class       = "com.rapidminer.operator.DataMacroDefinitionOperator"
+     description = "This operator can be used to define a single macro which can be used by %{my_macro} in parameter values. The macro value will be derived from the input data."
+     icon        = "macro"
+     group       = "Core.Macros"/>
+
+  <operator
+     name        = "MacroConstruction"
+     class       = "com.rapidminer.operator.MacroConstructionOperator"
+     description = "This operator can be used to calculate new macros (from existing ones)."
+     icon        = "macro"
+     group       = "Core.Macros"/>
+          
+  <operator
+     name        = "FileEcho"
+     class       = "com.rapidminer.operator.FileEchoOperator"
+     description = "This operator simply writes the given text into the specified file (can be useful in combination with a process branch)."
+     icon        = "command"
+     group       = "Core"/>     
+
+  <operator
+     name        = "SQLExecution"
+     class       = "com.rapidminer.operator.SQLExecution"
+     description = "This operator simply performs an arbitrary SQL statement."
+     icon        = "sql_execution"
+     group       = "Core"/>  
+
+  <operator
+     name        = "Script"
+     class       = "com.rapidminer.operator.ScriptingOperator"
+     description = "This operator executes arbitrary Groovy scripts."
+     icon        = "sql_execution"     
+     group       = "Core"/>  
+
+  <!-- Validation -->
+
+  <operator 
+     name        = "PerformanceEvaluator"     
+     class       = "com.rapidminer.operator.performance.PerformanceEvaluator"
+     description = "A performance evaluator delivers as output a list of performance values according to a list of performance criteria."
+     deprecation = "Please use the operators BasicPerformance, RegressionPerformance, ClassificationPerformance, or BinominalClassificationPerformance instead."
+     group       = "Validation.Performance"/>
+
+  <operator 
+     name        = "CostEvaluator"     
+     class       = "com.rapidminer.operator.performance.cost.CostEvaluator"
+     description = "A cost evaluator delivers as output the costs for given classification results."
+     group       = "Validation.Performance"/>
+
+  <operator 
+     name        = "Data2Performance"     
+     class       = "com.rapidminer.operator.performance.Data2Performance"
+     description = "This operator can be used to directly derive a performance measure from a specific data or statistics value."
+     group       = "Validation.Performance"/>
+
+  <operator 
+     name        = "Performance"     
+     class       = "com.rapidminer.operator.performance.SimplePerformanceEvaluator"
+     description = "This operator delivers as output a list of performance values automatically determined in order to fit the learning task type."
+     group       = "Validation"/>  
+          
+  <operator 
+     name        = "RegressionPerformance"     
+     class       = "com.rapidminer.operator.performance.RegressionPerformanceEvaluator"
+     description = "This operator delivers as output a list of performance values according to a list of selected performance criteria (for regression tasks)."
+     group       = "Validation"/>
+     
+  <operator 
+     name        = "ClassificationPerformance"     
+     class       = "com.rapidminer.operator.performance.PolynominalClassificationPerformanceEvaluator"
+     description = "This operator delivers as output a list of performance values according to a list of selected performance criteria (for all classification tasks)."
+     group       = "Validation"/>
+     
+  <operator 
+     name        = "BinominalClassificationPerformance"     
+     class       = "com.rapidminer.operator.performance.BinominalClassificationPerformanceEvaluator"
+     description = "This operator delivers as output a list of performance values according to a list of selected performance criteria (for binominal classification tasks)."
+     group       = "Validation"/>
+     
+  <operator 
+     name        = "ForecastingPerformance"     
+     class       = "com.rapidminer.operator.performance.ForecastingPerformanceEvaluator"
+     description = "This operator delivers as output a list of performance values according to a list of selected performance criteria (for forecasting regression tasks)."
+     group       = "Validation"/>
+          
+  <operator 
+     name        = "UserBasedPerformance"     
+     class       = "com.rapidminer.operator.performance.UserBasedPerformanceEvaluator"
+     description = "This operator delivers as output a list of performance values according to a list of user defined performance criteria."
+     group       = "Validation.Performance"/>     
+
+  <operator 
+     name        = "AttributeCounter"     
+     class       = "com.rapidminer.operator.performance.AttributeCounter"
+     description = "This operator created a performance vector containing the number of features of the input example set."
+     group       = "Validation.Performance"/> 
+
+  <operator 
+     name        = "SupportVectorCounter"     
+     class       = "com.rapidminer.operator.performance.SupportVectorCounter"
+     description = "This operator created a performance vector containing the number of support vectors of the input kernel model."
+     group       = "Validation.Performance"/>
+     
+  <operator 
+     name        = "WeightedPerformanceCreator"     
+     class       = "com.rapidminer.operator.performance.WeightedPerformanceCreator"
+     description = "Returns a performance vector containing the weighted fitness value of the input criteria."
+     group       = "Validation.Performance"/> 
+
+  <operator 
+     name        = "MinMaxWrapper"
+     class       = "com.rapidminer.operator.performance.MinMaxWrapper"
+     description = "Puts all input criteria into a min-max criterion which delivers the minimum instead of the average or arbitrary weighted combinations."
+     group       = "Validation.Performance"/>
+     
+  <operator 
+     name        = "XValidation"     
+     class       = "com.rapidminer.operator.validation.XValidation"
+     description = "XValidation encapsulates a cross-validation in order to estimate the performance of a learning operator."
+     group       = "Validation"/>
+
+  <operator 
+     name        = "BatchXValidation"     
+     class       = "com.rapidminer.operator.validation.BatchXValidation"
+     description = "A batched cross-validation in order to estimate the performance of a learning operator according to predefined example batches."
+     group       = "Validation.Other"/>     
+     
+  <operator 
+     name        = "BootstrappingValidation"     
+     class       = "com.rapidminer.operator.validation.BootstrappingValidation"
+     description = "This operator encapsulates an iterated bootstrapping sampling with performance evaluation on the remaining examples."
+     group       = "Validation.Other"/>
+     
+  <operator 
+     name        = "WeightedBootstrappingValidation"     
+     class       = "com.rapidminer.operator.validation.WeightedBootstrappingValidation"
+     description = "This operator encapsulates an iterated weighted bootstrapping sampling with performance evaluation on the remaining examples."
+     group       = "Validation.Other"/>
+
+  <operator 
+     name        = "SimpleValidation"     
+     class       = "com.rapidminer.operator.validation.RandomSplitValidationChain"
+     description = "A SimpleValidation randomly splits up the example set into a training and test set and evaluates the model."
+     group       = "Validation"/>
+
+  <operator 
+     name        = "FixedSplitValidation"     
+     class       = "com.rapidminer.operator.validation.FixedSplitValidationChain"
+     description = "A FixedSplitValidation splits up the example set at a fixed point into a training and test set and evaluates the model."
+     group       = "Validation.Other"/>
+
+  <operator 
+     name        = "SlidingWindowValidation"     
+     class       = "com.rapidminer.operator.validation.SlidingWindowValidation"
+     description = "SlidingWindoValidation encapsulates sliding windows of training and tests in order to estimate the performance of a prediction operator."
+     group       = "Validation.Other"/>
+
+  <operator 
+     name        = "BatchSlidingWindowValidation"     
+     class       = "com.rapidminer.operator.validation.BatchSlidingWindowValidation"
+     description = "Performs a sliding window validation on predefined example batches."
+     group       = "Validation.Other"/>
+     
+  <operator 
+     name        = "WrapperXValidation"     
+     class       = "com.rapidminer.operator.validation.WrapperXValidation"
+     description = "Encapsulates a cross-validation to evaluate a feature weighting or selection method (wrapper)."
+     group       = "Validation"/>
+
+  <operator 
+     name        = "SimpleWrapperValidation"     
+     class       = "com.rapidminer.operator.validation.RandomSplitWrapperValidationChain"
+     description = "A simple validation method to check the performance of a feature weighting or selection wrapper."
+     group       = "Validation.Other"/>
+
+  <operator 
+     name        = "IteratingPerformanceAverage"     
+     class       = "com.rapidminer.operator.validation.IteratingPerformanceAverage"
+     description = "Iterates the inner operators and builds the average of the results."
+     group       = "Validation.Other"/>
+
+  <operator 
+     name        = "CFSFeatureSetEvaluator"     
+     class       = "com.rapidminer.operator.validation.CFSFeatureSetEvaluator"
+     description = "Calculates a performance measure based on the Correlation (filter evaluation)."
+     group       = "Validation.Performance"/>
+
+  <operator 
+     name        = "ConsistencyFeatureSetEvaluator"     
+     class       = "com.rapidminer.operator.validation.ConsistencyFeatureSetEvaluator"
+     description = "Calculates a performance measure based on the consistency (filter evaluation)."
+     group       = "Validation.Performance"/>
+
+  <operator 
+     name        = "T-Test"     
+     class       = "com.rapidminer.operator.validation.significance.TTestSignificanceTestOperator"
+     description = "Performs a t-test to determine the probability for the null hypothesis 'the actual means are the same'."
+     group       = "Validation.Significance"/>
+
+  <operator 
+     name        = "Anova"     
+     class       = "com.rapidminer.operator.validation.significance.AnovaSignificanceTestOperator"
+     description = "Performs ANalysis Of VAriances to determine the probability for the null hypothesis 'the actual means are the same'."
+     group       = "Validation.Significance"/>
+
+  <operator 
+     name        = "ClusterDensityEvaluator"           
+     class       = "com.rapidminer.operator.validation.clustering.ClusterDensityEvaluator"
+     description = "Delivers a performance based on cluster densities."
+     group       = "Validation.Performance.Clustering"/>
+ 
+  <operator 
+     name        = "ClusterCentroidEvaluator"           
+     class       = "com.rapidminer.operator.validation.clustering.CentroidBasedEvaluator"
+     description = "Delivers a performance based on cluster centroids."
+     group       = "Validation.Performance.Clustering"/> 
+
+  <operator 
+     name        = "ClusterNumberEvaluator"         
+     class       = "com.rapidminer.operator.validation.clustering.ClusterNumberEvaluator"
+     description = "Delivers a performance based on the number of clusters."
+     group       = "Validation.Performance.Clustering"/> 
+     
+  <operator 
+     name        = "ItemDistributionEvaluator"           
+     class       = "com.rapidminer.operator.validation.clustering.exampledistribution.ExampleDistributionEvaluator"
+     description = "Delivers a performance of a cluster model based on the distribution of examples."
+     group       = "Validation.Performance.Clustering"/> 
+     
+  
+
+  <!-- IO -->
+
+  <operator 
+     name        = "AttributeConstructionsWriter"     
+     class       = "com.rapidminer.operator.io.AttributeConstructionsWriter"
+     description = "Writes all attributes of an example set to a file. Each line holds the construction description of one attribute."
+     group       = "IO.Attributes"/>
+
+  <operator 
+     name        = "AttributeConstructionsLoader"     
+     class       = "com.rapidminer.operator.io.AttributeConstructionsLoader"
+     description = "Loads all attributes of an example set from a file. Each line holds the construction description of one attribute."
+     group       = "IO.Attributes"/>
+
+  <operator 
+     name        = "AttributeWeightsWriter"     
+     class       = "com.rapidminer.operator.io.AttributeWeightsWriter"
+     description = "Writes the weights of all attributes of an example set to a file. Each line holds the name and the weight of one attribute."
+     group       = "IO.Attributes"/>
+
+  <operator 
+     name        = "AttributeWeightsLoader"     
+     class       = "com.rapidminer.operator.io.AttributeWeightsLoader"
+     description = "Reads the weights of all attributes of an example set from a file. Each line must hold the name and the weight of one attribute."
+     group       = "IO.Attributes"/>
+
+  <operator 
+     name        = "AccessExampleSource"     
+     class       = "com.rapidminer.operator.io.AccessExampleSource"
+     description = "This operator reads an example set from an Access database."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "DatabaseExampleSource"     
+     class       = "com.rapidminer.operator.io.DatabaseExampleSource"
+     description = "This operator reads an example set from an SQL database."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "CachedDatabaseExampleSource"     
+     class       = "com.rapidminer.operator.io.CachedDatabaseExampleSource"
+     description = "This operator reads an example set from an SQL database by incrementally caching it (recommended)."
+     group       = "IO.Examples"/>
+     
+  <operator
+     name        = "SimpleExampleSource"
+     class       = "com.rapidminer.operator.io.SimpleExampleSource"
+     description = "This operator reads an example set from file. It is a simpler version of the ExampleSource operator."
+     group       = "IO.Examples"/>
+     
+  <operator
+     name        = "URLExampleSource"
+     class       = "com.rapidminer.operator.io.URLExampleSource"
+     description = "This operator reads an example set from a URL. It allows only a fixed data format but on the other hand is able to read data from arbitrary sources."
+     group       = "IO.Examples"/>
+               
+  <operator 
+     name        = "ExampleSource"     
+     class       = "com.rapidminer.operator.io.ExampleSource"
+     description = "This operator reads an example set from file. The operator can be configured to read almost all file formats."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "ExcelExampleSource"     
+     class       = "com.rapidminer.operator.io.ExcelExampleSource"
+     description = "This operator reads an example set from Excel spreadsheet files."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "ExcelExampleSetWriter"     
+     class       = "com.rapidminer.operator.io.ExcelExampleSetWriter"
+     description = "This operator writes an example set to Excel spreadsheet files."
+     group       = "IO.Examples"/>
+          
+  <operator 
+     name        = "ExampleSetWriter"     
+     class       = "com.rapidminer.operator.io.ExampleSetWriter"
+     description = "Writes the values of all examples to a file."
+     group       = "IO.Examples"/>
+     
+  <operator 
+     name        = "DatabaseExampleSetWriter"     
+     class       = "com.rapidminer.operator.io.DatabaseExampleSetWriter"
+     description = "Writes the values of all examples to a single table in a database."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "ArffExampleSetWriter"     
+     class       = "com.rapidminer.operator.io.ArffExampleSetWriter"
+     description = "Writes the values of all examples into an ARFF-file."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "XrffExampleSetWriter"     
+     class       = "com.rapidminer.operator.io.XrffExampleSetWriter"
+     description = "Writes the values of all examples into an XRFF-file."
+     group       = "IO.Examples"/>
+     
+  <operator 
+     name        = "GnuplotWriter"    
+     class       = "com.rapidminer.operator.io.GNUPlotOperator"
+     description = "Creates gnuplot files from the data generated by a process log operator."
+     group       = "IO.Other"/>
+
+  <operator 
+     name        = "ArffExampleSource"     
+     class       = "com.rapidminer.operator.io.ArffExampleSource"
+     description = "This operator can read arff files."
+     group       = "IO.Examples"/>
+     
+  <operator 
+     name        = "XrffExampleSource"     
+     class       = "com.rapidminer.operator.io.XrffExampleSource"
+     description = "This operator can read xrff files."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "CSVExampleSource"
+     class       = "com.rapidminer.operator.io.CSVExampleSource"
+     description = "This operator can read csv files."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "CSVExampleSetWriter"
+     class       = "com.rapidminer.operator.io.CSVExampleSetWriter"
+     description = "This operator can write csv files."
+     group       = "IO.Examples"/>
+     
+  <operator 
+     name        = "DBaseExampleSource"
+     class       = "com.rapidminer.operator.io.DBaseExampleSource"
+     description = "This operator can read dBase files."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "BibtexExampleSource"
+     class       = "com.rapidminer.operator.io.BibtexExampleSource"
+     description = "This operator can read BibTeX files."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "C45ExampleSource"
+     class       = "com.rapidminer.operator.io.C45ExampleSource"
+     description = "This operator can read data and meta given in C4.5 format."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "DasyLabExampleSource"
+     class       = "com.rapidminer.operator.io.DasyLabDataReader"
+     description = "This operator can read DasyLab data files."
+     group       = "IO.Examples"/>
+
+  <operator 
+     name        = "SPSSExampleSource"
+     class       = "com.rapidminer.operator.io.SPSSExampleSource"
+     description = "This operator can read SPSS data files."
+     group       = "IO.Examples"/>
+     
+  <operator 
+     name        = "StataExampleSource"
+     class       = "com.rapidminer.operator.io.StataExampleSource"
+     description = "This operator can read Stata data files."
+     group       = "IO.Examples"/>     
+
+  <operator 
+     name        = "SparseFormatExampleSource"
+     class       = "com.rapidminer.operator.io.SparseFormatExampleSource"
+     description = "Reads an example file in sparse format."
+     group       = "IO.Examples"/>
+     
+  <operator 
+     name        = "ModelLoader"     
+     class       = "com.rapidminer.operator.io.ModelLoader"
+     description = "Reads a model from a given file."
+     group       = "IO.Models"/>
+
+  <operator 
+     name        = "ModelWriter"     
+     class       = "com.rapidminer.operator.io.ModelWriter"
+     description = "Writes a model to a given file."
+     group       = "IO.Models"/>
+     
+  <operator 
+     name        = "WekaModelLoader"     
+     class       = "com.rapidminer.operator.io.WekaModelLoader"
+     description = "Reads a Weka model from a given file."
+     group       = "IO.Models"/>
+
+  <operator 
+     name        = "ParameterSetLoader"     
+     class       = "com.rapidminer.operator.io.ParameterSetLoader"
+     description = "Reads a parameter set from a file."
+     group       = "IO.Other"/>
+
+  <operator 
+     name        = "ParameterSetWriter"     
+     class       = "com.rapidminer.operator.io.ParameterSetWriter"
+     description = "Writes a parameter set into a file."
+     group       = "IO.Other"/>
+
+  <operator 
+     name        = "ThresholdLoader"     
+     class       = "com.rapidminer.operator.io.ThresholdLoader"
+     description = "Loads a threshold from a file (used for transforming soft into crisp predictions)."
+     group       = "IO.Other"/>
+
+  <operator 
+     name        = "ThresholdWriter"     
+     class       = "com.rapidminer.operator.io.ThresholdWriter"
+     description = "Writes a threshold to a file (used for transforming soft into crisp predictions)."
+     group       = "IO.Other"/>
+     
+  <operator
+     name        = "IOContainerWriter"
+     class       = "com.rapidminer.operator.io.IOContainerWriter"
+     description = "Writes all current IO objects to a file."
+     group       = "IO.Other"/>
+
+  <operator
+     name        = "IOContainerReader"
+     class       = "com.rapidminer.operator.io.IOContainerReader"
+     description = "Reads an IOContainer from a file."
+     group       = "IO.Other"/>
+       
+  <operator
+     name        = "IOObjectWriter"
+     class       = "com.rapidminer.operator.io.IOObjectWriter"
+     description = "Generic writer for all types of IOObjects."
+     group       = "IO.Other"/>
+
+  <operator
+     name        = "IOObjectReader"
+     class       = "com.rapidminer.operator.io.IOObjectReader"
+     description = "Generic reader for all types of IOObjects."
+     group       = "IO.Other"/>
+                         
+  <operator 
+     name        = "ResultWriter"     
+     class       = "com.rapidminer.operator.io.ResultWriter"
+     description = "This operator can be used at each point in an operator chain and and writes current results to the console or to a file."
+     group       = "IO.Results"/>
+
+  <operator 
+     name        = "PerformanceWriter"     
+     class       = "com.rapidminer.operator.io.PerformanceWriter"
+     description = "This operator can be used to write the input performance into a file."
+     group       = "IO.Results"/>
+
+  <operator 
+     name        = "PerformanceLoader"     
+     class       = "com.rapidminer.operator.io.PerformanceLoader"
+     description = "This operator can be used to load a performance vector from a file."
+     group       = "IO.Results"/>
+     
+  <operator 
+     name        = "ClusterModelWriter"          
+     class       = "com.rapidminer.operator.io.ClusterModelWriter"
+     description = "Writes a cluster model to a file."
+     group       = "IO.Clustering" />
+   
+	<operator 
+     name        = "ClusterModelReader"         
+     class       = "com.rapidminer.operator.io.ClusterModelReader"
+     description = "Reads a single cluster model from a file."
+     group       = "IO.Clustering" />
+
+
+  <!-- Supervised Learning -->
+
+  <operator 
+     name        = "Binary2MultiClassLearner"     
+     class       = "com.rapidminer.operator.learner.meta.Binary2MultiClassLearner"
+     description = "Builds a classification model for multiple classes based on a binary learner."
+     group       = "Learner.Supervised.Meta"/>
+
+  <operator 
+     name        = "RelativeRegression"     
+     class       = "com.rapidminer.operator.learner.meta.RelativeRegression"
+     description = "Learns a regression model for predictions relative to another attribute value."
+     group       = "Learner.Supervised.Meta"/>
+     
+  <operator 
+     name        = "MetaCost"     
+     class       = "com.rapidminer.operator.learner.meta.MetaCost"
+     description = "Builds a classification model using cost values from a given matrix."
+     group       = "Learner.Supervised.Meta"/>
+  
+  <operator 
+     name        = "CostBasedThresholdLearner"     
+     class       = "com.rapidminer.operator.learner.meta.CostBasedThresholdLearner"
+     description = "Determines confidence thresholds based on misclassification costs, also possible to define costs for the option non-classified."
+     group       = "Learner.Supervised.Meta"/>
+          
+  <operator 
+     name        = "NaiveBayes"     
+     class       = "com.rapidminer.operator.learner.bayes.NaiveBayes"
+     description = "Returns classification model using estimated normal distributions."
+     group       = "Learner.Supervised.Bayes"/>
+
+  <operator 
+     name        = "KernelNaiveBayes"     
+     class       = "com.rapidminer.operator.learner.bayes.KernelNaiveBayes"
+     description = "Returns classification model using estimated kernel densities."
+     group       = "Learner.Supervised.Bayes"/>
+
+  <operator 
+     name        = "AttributeBasedVote"     
+     class       = "com.rapidminer.operator.learner.lazy.AttributeBasedVotingLearner"
+     description = "Actually no learning scheme since the prediction is the average of all attribute values."
+     group       = "Learner.Supervised.Lazy"/>
+
+  <operator 
+     name        = "NearestNeighbors"     
+     class       = "com.rapidminer.operator.learner.lazy.KNNLearner"
+     description = "Classification with k-NN based on an explicit similarity measure."
+     group       = "Learner.Supervised.Lazy"/>
+
+  <operator 
+     name        = "Perceptron"     
+     class       = "com.rapidminer.operator.learner.functions.Perceptron"
+     description = "Single Perceptron finding seperating hyperplane if one exists"
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "LinearRegression"     
+     class       = "com.rapidminer.operator.learner.functions.LinearRegression"
+     description = "Linear regression."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator
+     name	     = "VectorLinearRegression"
+     class       = "com.rapidminer.operator.learner.functions.VectorLinearRegression"
+     description = "Vector linear regression."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "FastLargeMargin"     
+     class       = "com.rapidminer.operator.learner.functions.FastLargeMargin"
+     description = "A fast learning method for large margin optimizations."
+     group       = "Learner.Supervised.Functions"/>
+     
+  <operator 
+     name        = "PolynomialRegression"     
+     class       = "com.rapidminer.operator.learner.functions.PolynomialRegression"
+     description = "Polynomial regression."
+     group       = "Learner.Supervised.Functions"/>
+     
+  <operator 
+     name        = "AdditiveRegression"     
+     class       = "com.rapidminer.operator.learner.meta.AdditiveRegression"
+     description = "Additive regression operator allowing all learners (not restricted to Weka learners)."
+     group       = "Learner.Supervised.Meta"/>
+     
+  <operator 
+     name        = "Bagging"     
+     class       = "com.rapidminer.operator.learner.meta.Bagging"
+     description = "Bagging operator allowing all learners (not restricted to Weka learners)."
+     group       = "Learner.Supervised.Meta"/>
+
+  <operator 
+     name        = "Stacking"     
+     class       = "com.rapidminer.operator.learner.meta.Stacking"
+     description = "Uses the first inner learner to build a stacked model on top of the predictions of the other inner learners."
+     group       = "Learner.Supervised.Meta"/>
+
+  <operator 
+     name        = "Vote"     
+     class       = "com.rapidminer.operator.learner.meta.Vote"
+     description = "Uses a majority vote (for classification) or the average (for regression) on top of the predictions of the other inner learners."
+     group       = "Learner.Supervised.Meta"/>
+               
+  <operator 
+     name        = "BayesianBoosting"     
+     class       = "com.rapidminer.operator.learner.meta.BayesianBoosting"
+     description = "Boosting operator based on Bayes' theorem."
+     group       = "Learner.Supervised.Meta"/>
+
+  <operator 
+     name        = "SubgroupDiscovery"     
+     class       = "com.rapidminer.operator.learner.meta.SDRulesetInduction"
+     description = "A Subgroup Discovery meta learning scheme"
+     group       = "Learner.Supervised.Meta"/>
+
+  <operator 
+     name        = "ExhaustiveSubgroupDiscovery"     
+     class       = "com.rapidminer.operator.learner.subgroups.SubgroupDiscovery"
+     description = "Performs an exhaustive subgroup discovery."
+     group       = "Learner.Supervised.Subgroups"/>
+          
+  <operator 
+     name        = "IteratingGSS"     
+     class       = "com.rapidminer.operator.learner.igss.IteratingGSS"
+     description = "Combines Generic Sequential Sampling by Scheffer/Wrobel with Knowledge-Based Sampling by Scholz."
+     deprecation = "This operator will not be supported in future releases"
+     group       = "Learner.Supervised.Rules"/>
+     
+  <operator 
+     name        = "AdaBoost"     
+     class       = "com.rapidminer.operator.learner.meta.AdaBoost"
+     description = "Boosting operator allowing all learners (not restricted to Weka learners)."
+     group       = "Learner.Supervised.Meta"/>
+
+  <operator
+     name        = "BestRuleInduction"
+     class       = "com.rapidminer.operator.learner.rules.BestRuleInduction"
+     description = "Returns a best conjunctive rule with respect to the WRAcc metric for boolean prediction problems and polynomial attributes."
+     group       = "Learner.Supervised.Rules"/>
+
+  <operator
+     name        = "MultiCriterionDecisionStump"
+     class       = "com.rapidminer.operator.learner.tree.MultiCriterionDecisionStumps"
+     description = "A quick DecisionStump clone that allows to specify different utility functions."
+     group       = "Learner.Supervised.Trees"/>
+     
+  <operator 
+     name        = "NeuralNet"     
+     class       = "com.rapidminer.operator.learner.functions.neuralnet.NeuralNetLearner"
+     description = "Learns a neural net from the input data."
+     deprecation = "Please use the operator 'NeuralNetImproved' instead."
+     group       = "Learner.Supervised.Functions"/>
+     
+  <operator 
+     name        = "NeuralNetSimple"     
+     class       = "com.rapidminer.operator.learner.functions.neuralnet.SimpleNeuralNetLearner"
+     description = "Learns a neural net from the input data."
+     deprecation = "Please use the operator 'NeuralNetImproved' instead."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "NeuralNetImproved"     
+     class       = "com.rapidminer.operator.learner.functions.neuralnet.ImprovedNeuralNetLearner"
+     description = "Learns a neural net from the input data."
+     group       = "Learner.Supervised.Functions"/>
+     
+  <operator 
+     name        = "DefaultLearner"     
+     class       = "com.rapidminer.operator.learner.lazy.DefaultLearner"
+     description = "Learns a default value."
+     group       = "Learner.Supervised.Lazy"/>
+
+  <operator
+     name        = "TransformedRegression"
+     class       = "com.rapidminer.operator.learner.meta.TransformedRegression"
+     description = "This learner performs regression by transforming the labels and calling an inner regression learner."
+     group       = "Learner.Supervised.Meta"/>
+     
+  <operator 
+     name        = "ClassificationByRegression"
+     class       = "com.rapidminer.operator.learner.meta.ClassificationByRegression"
+     description = "This operator chain must contain a regression learner and allows to learn classifications tasks with more than two classes."
+     group       = "Learner.Supervised.Meta"/>
+     
+  <operator 
+     name        = "JMySVMLearner"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.JMySVMLearner"
+     description = "JMySVMLearner provides an internal Java implementation of the mySVM by Stefan Rueping."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "MyKLRLearner"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.MyKLRLearner"
+     description = "MyKLRLearner provides an internal Java implementation of the myKLR by Stefan Rueping."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "LibSVMLearner"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.LibSVMLearner"
+     description = "LibSVMLearner encapsulates the Java libsvm, an SVM learner."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "EvoSVM"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.evosvm.EvoSVM"
+     description = "EvoSVM uses an Evolutionary Strategy for optimization."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "HyperHyper"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.hyperhyper.HyperHyper"
+     description = "This is a minimal SVM implementation. The model is built with only one positive and one negative example. Typically this operater is used in combination with a boosting method."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "LogisticRegression"     
+     class       = "com.rapidminer.operator.learner.functions.LogisticRegression"
+     description = "A logistic regression learner for binary classification tasks."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "LinearDiscriminantAnalysis"
+     class       = "com.rapidminer.operator.learner.bayes.LinearDiscriminantAnalysis"
+     description = "A linear discriminant function for binominal labels and numerical attributes."
+     group       = "Learner.Supervised.Functions"/>
+     
+  <operator 
+     name        = "QuadraticDiscriminantAnalysis"
+     class       = "com.rapidminer.operator.learner.bayes.QuadraticDiscriminantAnalysis"
+     description = "A quadratic discriminant function for binominal labels and numerical attributes."
+     group       = "Learner.Supervised.Functions"/>
+     
+  <operator 
+     name        = "RegularizedDiscriminantAnalysis"
+     class       = "com.rapidminer.operator.learner.bayes.RegularizedDiscriminantAnalysis"
+     description = "A regularized generale discriminant function for binominal labels and numerical attributes."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "KernelLogisticRegression"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.KernelLogisticRegression"
+     description = "A kernel logistic regression learner for binary classification tasks."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "PsoSVM"     
+     class       = "com.rapidminer.operator.learner.functions.kernel.evosvm.PSOSVM"
+     description = "PsoSVM uses a Particle Swarm Optimization for optimization."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "RVMLearner"
+     class       = "com.rapidminer.operator.learner.functions.kernel.RVMLearner"
+     description = "An implementation of a relevance vector machine."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "GPLearner"
+     class       = "com.rapidminer.operator.learner.functions.kernel.GPLearner"
+     description = "An implementation of Gaussian Processes."
+     group       = "Learner.Supervised.Functions"/>
+
+  <operator 
+     name        = "DecisionStump"
+     class       = "com.rapidminer.operator.learner.tree.DecisionStumpLearner"
+     description = "Learns only a root node of a decision tree. Can be very efficient when boosted."
+     group       = "Learner.Supervised.Trees"/>
+     
+  <operator 
+     name        = "ID3"
+     class       = "com.rapidminer.operator.learner.tree.ID3Learner"
+     description = "Learns an unpruned decision tree from nominal attributes only."
+     group       = "Learner.Supervised.Trees"/>
+     
+  <operator 
+     name        = "ID3Numerical"
+     class       = "com.rapidminer.operator.learner.tree.ID3NumericalLearner"
+     description = "Learns an unpruned decision tree from nominal and numerical data."
+     group       = "Learner.Supervised.Trees"/>
+     
+  <operator 
+     name        = "DecisionTree"
+     class       = "com.rapidminer.operator.learner.tree.DecisionTreeLearner"
+     description = "Learns a pruned decision tree which can handle both numerical and nominal attributes."
+     group       = "Learner.Supervised.Trees"/>
+     
+  <operator 
+     name        = "CHAID"
+     class       = "com.rapidminer.operator.learner.tree.CHAIDLearner"
+     description = "Learns a pruned decision tree based on a chi squared attribute relevance test."
+     group       = "Learner.Supervised.Trees"/>
+
+  <operator 
+     name        = "RelevanceTree"
+     class       = "com.rapidminer.operator.learner.tree.RelevanceTreeLearner"
+     description = "Learns a pruned decision tree based on an arbitrary feature relevance test (attribute weighting scheme as inner operator)."
+     group       = "Learner.Supervised.Trees"/>
+     
+  <operator 
+     name        = "RandomTree"
+     class       = "com.rapidminer.operator.learner.tree.RandomTreeLearner"
+     description = "Learns a single decision tree. For each split only a random subset of attributes is available."
+     group       = "Learner.Supervised.Trees"/> 
+     
+  <operator 
+     name        = "RandomForest"
+     class       = "com.rapidminer.operator.learner.tree.RandomForestLearner"
+     description = "Learns a set of random trees, i.e. for each split only a random subset of attributes is available. The resulting model is a voting model of all trees."
+     group       = "Learner.Supervised.Trees"/> 
+     
+  <operator 
+     name        = "RuleLearner"
+     class       = "com.rapidminer.operator.learner.rules.RuleLearner"
+     description = "Learns a pruned set of rules with respect to the information gain."
+     group       = "Learner.Supervised.Rules"/>
+
+  <operator 
+     name        = "OneR"
+     class       = "com.rapidminer.operator.learner.rules.SingleRuleLearner"
+     description = "Learns a single rule using only one attribute."
+     group       = "Learner.Supervised.Rules"/>
+     
+  <operator 
+     name        = "BasicRuleLearner"
+     class       = "com.rapidminer.operator.learner.rules.SimpleRuleLearner"
+     description = "Learns a set of rules minimizing the training error without pruning."
+     group       = "Learner.Supervised.Rules"/>
+
+  <operator 
+     name        = "Tree2RuleConverter"
+     class       = "com.rapidminer.operator.learner.meta.Tree2RuleConverter"
+     description = "Determines a set of rules from a given decision tree model."
+     group       = "Learner.Supervised.Meta"/>
+          
+  <operator 
+     name        = "MultiwayDecisionTree"
+     class       = "com.rapidminer.operator.learner.tree.MultiwayDecisionTree"
+     description = "Uses the split points of numerical attributes to first discretize attributes and then perform the tree building again."
+     group       = "Learner.Supervised.Trees" />        
+
+  <!-- Unsupervised Learning -->
+     
+  <operator 
+     name        = "FPGrowth"           
+     class       = "com.rapidminer.operator.learner.associations.fpgrowth.FPGrowth"
+     description = "This learner efficiently calculates all frequent item sets from the given data."
+     group       = "Learner.Unsupervised.Itemsets"/>
+
+  <operator 
+     name        = "AssociationRuleGenerator"
+     class       = "com.rapidminer.operator.learner.associations.AssociationRuleGenerator"
+     description = "This operator generated a set of association rules for a given set of frequent item sets."
+     group       = "Learner.Unsupervised.Itemsets"/>
+     
+   <operator 
+     name        = "KMedoids"         
+     class       = "com.rapidminer.operator.clustering.clusterer.KMedoids"
+     description = "Clustering with k-medoids"
+     group       = "Learner.Unsupervised.Clustering"/>
+     
+  <operator 
+     name        = "KMeans"       
+     class       = "com.rapidminer.operator.clustering.clusterer.KMeans"
+     description = "Clustering with k-means"
+     group       = "Learner.Unsupervised.Clustering"/>
+          
+  <operator 
+     name        = "EMClustering"       
+     class       = "com.rapidminer.operator.clustering.clusterer.soft.EMClusterer"
+     description = "Clustering with EM"
+     group       = "Learner.Unsupervised.Clustering"/>
+
+  <operator 
+     name        = "KernelKMeans"     
+     class       = "com.rapidminer.operator.clustering.clusterer.KernelKMeans"
+     description = "Clustering with kernel k-means"
+     group       = "Learner.Unsupervised.Clustering"/>    
+
+  <operator 
+     name        = "SupportVectorClustering"          
+     class       = "com.rapidminer.operator.clustering.clusterer.SVClustering"
+     description = "Clustering with support vectors"
+     group       = "Learner.Unsupervised.Clustering"/>
+     
+  <operator 
+     name        = "AgglomerativeClustering"          
+     class       = "com.rapidminer.operator.clustering.clusterer.AgglomerativeClustering"
+     description = "Agglomerative buttom-up clustering"
+     group       = "Learner.Unsupervised.Clustering"/>
+
+  <operator 
+     name        = "TopDownClustering"          
+     class       = "com.rapidminer.operator.clustering.clusterer.TopDownClustering"
+     description = "Hierarchical clustering by applying an inner flat clusterer scheme recursively"
+     group       = "Learner.Unsupervised.Clustering"/>
+    
+  <operator 
+     name        = "DBScanClustering"        
+     class       = "com.rapidminer.operator.clustering.clusterer.DBScan"
+     description = "Clustering with DBSCAN"
+     group       = "Learner.Unsupervised.Clustering"/>     
+
+  <operator 
+     name        = "RandomFlatClustering"         
+     class       = "com.rapidminer.operator.clustering.clusterer.RandomClustering"
+     description = "Flat random clustering"
+     group       = "Learner.Unsupervised.Clustering"/>
+
+  <operator 
+     name        = "ExampleSet2ClusterModel"        
+     class       = "com.rapidminer.operator.clustering.clusterer.ExampleSet2ClusterModel"
+     description = "Clustering based on one nominal attribute."
+     group       = "Learner.Unsupervised.Clustering"/> 
+     
+  <operator 
+     name        = "FlattenClusterModel"          
+     class       = "com.rapidminer.operator.clustering.FlattenClusterModel"
+     description = "Creates a flat cluster model from a hierarchical one."
+     group       = "Learner.Unsupervised.Clustering"/>
+   
+  <operator 
+     name        = "ClusterModel2ExampleSet"         
+     class       = "com.rapidminer.operator.clustering.ClusterModel2ExampleSet"
+     description = "Labels an example set with the cluster ids from a given non hierarchical cluster model."
+     group       = "Learner.Unsupervised.Clustering"/>
+     
+  <operator 
+     name        = "Cluster2Prediction"         
+     class       = "com.rapidminer.operator.clustering.ClusterToPrediction"
+     description = "This operator converts the cluster attribute into an prediction attribut, choosing the best fitting pairs between cluster and label."
+     group       = "Learner.Unsupervised.Clustering"/>
+     
+  <operator 
+     name        = "ExampleSet2Similarity"          
+     class       = "com.rapidminer.operator.similarity.ExampleSet2Similarity"
+     description = "Calculates a similarity measure from the given data (attribute based)."
+     group       = "Learner.Unsupervised.Clustering.Similarity"/>
+
+  <operator 
+     name        = "ExampleSet2SimilarityExampleSet"          
+     class       = "com.rapidminer.operator.similarity.ExampleSet2SimilarityExampleSet"
+     description = "Calculates between all given examples."
+     group       = "Learner.Unsupervised.Clustering.Similarity"/>
+
+  <operator 
+     name        = "Similarity2ExampleSet"          
+     class       = "com.rapidminer.operator.similarity.Similarity2ExampleSet"
+     description = "Calculates a an example set from a similarity measure."
+     group       = "Learner.Unsupervised.Clustering.Similarity"/>
+     
+     
+  <!-- Data preprocessing -->        
+
+  <operator 
+     name        = "IdTagging"     
+     class       = "com.rapidminer.operator.preprocessing.IdTagging"
+     description = "Adds a new id attribute to the example set, each example is tagged with an incremented number."
+     group       = "Preprocessing"/>
+
+  <operator 
+     name        = "AttributeSubsetPreprocessing"     
+     class       = "com.rapidminer.operator.preprocessing.AttributeSubsetPreprocessing"
+     description = "Selects one attribute (or a subset) via a regular expression and applies its inner operators to the resulting subset."
+     group       = "Preprocessing.Attributes"/>
+          
+  <operator 
+     name        = "AbsoluteValues"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AbsoluteValueFilter"
+     description = "Replaces all numerical values by their absolute values."
+     group       = "Preprocessing.Attributes.Generation"/>
+               
+  <operator 
+     name        = "AttributeWeightsApplier"     
+     class       = "com.rapidminer.operator.features.AttributeWeightsApplier"
+     description = "Deselects attributes with weight 0 and calculates new values for numeric attributes."
+     group       = "Preprocessing.Attributes"/>
+
+  <operator 
+     name        = "PrincipalComponentsGenerator"     
+     class       = "com.rapidminer.operator.features.transformation.PrincipalComponentsTransformation"
+     description = "Build the principal components of the given data."
+     group       = "Preprocessing.Attributes.Transformation"/>
+     
+  <operator 
+     name        = "FrequentItemSetAttributeCreator"
+     class       = "com.rapidminer.operator.learner.associations.FrequentItemSetAttributeCreator"
+     description = "Creates attributes from frequent item sets."
+     group       = "Preprocessing.Attributes.Generation"/>
+     
+  <operator 
+     name        = "AttributeMerge"
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeMerge"
+     description = "Merges two attributes into a single new attribute by concatenating the values."
+     group       = "Preprocessing.Attributes.Filter"/>
+     
+  <operator 
+     name        = "ChangeAttributeName"
+     class       = "com.rapidminer.operator.preprocessing.filter.ChangeAttributeName"
+     description = "This operator can be used to rename an attribute."
+     group       = "Preprocessing.Attributes.Filter"/>
+     
+  <operator 
+     name        = "ChangeAttributeNamesReplace"
+     class       = "com.rapidminer.operator.preprocessing.filter.ChangeAttributeNamesReplace"
+     description = "This operator can be used to rename a set of attributes by replacing parts of the attribute names by a specified replacement."
+     group       = "Preprocessing.Attributes.Filter"/>
+          
+  <operator 
+     name        = "ChangeAttributeNames2Generic"
+     class       = "com.rapidminer.operator.preprocessing.filter.ChangeAttributeNames2Generic"
+     description = "This operator can be used to rename all attributes of the input example set to a set of generic names like att1, att2, att3  etc."
+     group       = "Preprocessing.Attributes.Filter"/>
+               
+  <operator 
+     name        = "Construction2Names"
+     class       = "com.rapidminer.operator.preprocessing.filter.Construction2Names"
+     description = "This operator renames all regular attributes by their construction descriptions if available."
+     group       = "Preprocessing.Attributes.Filter"/>
+                    
+  <operator 
+     name        = "ChangeAttributeType"
+     class       = "com.rapidminer.operator.preprocessing.filter.ChangeAttributeType"
+     description = "This operator can be used to change the attribute type (regular, special, label, id...)."
+     deprecation = "Please use the operator ChangeAttributeRole instead"
+     group       = "Preprocessing.Attributes.Filter"/>
+     
+  <operator 
+     name        = "ChangeAttributeRole"
+     class       = "com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole"
+     description = "This operator can be used to change the attribute type (regular, special, label, id...)."
+     group       = "Preprocessing.Attributes.Filter"/>
+     
+  <operator 
+     name        = "ExchangeAttributeRoles"
+     class       = "com.rapidminer.operator.preprocessing.filter.ExchangeAttributeRoles"
+     description = "This operator can be used to exchange the attribute roles of two attributes (e.g. a label with a regular attribute)."
+     group       = "Preprocessing.Attributes.Filter"/>
+     
+  <operator 
+     name        = "AttributeWeightSelection"
+     class       = "com.rapidminer.operator.features.selection.AttributeWeightSelection"
+     description = "Selects only attributes which weights fulfill a given relation with respect to the input attribute weights."
+     group       = "Preprocessing.Attributes.Selection"/>
+
+  <operator 
+     name        = "BruteForce"     
+     class       = "com.rapidminer.operator.features.selection.BruteForceSelection"
+     description = "Selects the best features for an example set by trying all possible combinations of attribute selections."
+     group       = "Preprocessing.Attributes.Selection"/>
+     
+  <operator 
+     name        = "FeatureSelection"     
+     class       = "com.rapidminer.operator.features.selection.FeatureSelectionOperator"
+     description = "This operator realizes feature selection by forward selection and backward elimination, respectively."
+     group       = "Preprocessing.Attributes.Selection"/>
+
+  <operator 
+     name        = "RandomSelection"     
+     class       = "com.rapidminer.operator.features.selection.RandomSelection"
+     description = "This operator simply selects a random or a predefined number of random features."
+     group       = "Preprocessing.Attributes.Selection"/>
+     
+  <operator 
+     name        = "GeneticAlgorithm"     
+     class       = "com.rapidminer.operator.features.selection.GeneticAlgorithm"
+     description = "A genetic algorithm for feature selection."
+     group       = "Preprocessing.Attributes.Selection"/>
+
+  <operator 
+     name        = "WeightGuidedFeatureSelection"
+     class       = "com.rapidminer.operator.features.selection.WeightGuidedSelectionOperator"
+     description = "Adds iteratively features according to input attribute weights"
+     group       = "Preprocessing.Attributes.Selection"/>
+
+  <operator 
+     name        = "WeightOptimization"
+     class       = "com.rapidminer.operator.meta.WeightOptimization"
+     description = "Feature selection (forward, backward) guided by weights."
+     group       = "Preprocessing.Attributes.Selection"/>
+
+  <operator 
+     name        = "IterativeWeightOptimization"
+     class       = "com.rapidminer.operator.meta.IterativeWeightOptimization"
+     description = "Feature selection (forward, backward) guided by weights. Weights have to be updated after each iteration"
+     group       = "Preprocessing.Attributes.Selection"/>
+
+  <operator 
+     name        = "GeneratingGeneticAlgorithm"     
+     class       = "com.rapidminer.operator.features.construction.GeneratingGeneticAlgorithm"
+     description = "A genetic algorithm for feature selection and feature generation (GGA)."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "AGA"     
+     class       = "com.rapidminer.operator.features.construction.AGA"
+     description = "Another (improved) genetic algorithm for feature selection and feature generation (AGA)."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "YAGGA"     
+     class       = "com.rapidminer.operator.features.construction.YAGGA"
+     description = "Yet Another GGA (Generating Geneting Algorithm). On average individuals (= selected attribute sets) will keep their original length, unless longer or shorther ones prove to have a better fitness."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "YAGGA2"     
+     class       = "com.rapidminer.operator.features.construction.YAGGA2"
+     description = "Improved version of Yet Another GGA (Generating Geneting Algorithm)."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "EvolutionaryFeatureAggregation"     
+     class       = "com.rapidminer.operator.features.aggregation.EvolutionaryFeatureAggregation"
+     description = "A generating genetic algorithm for unsupervised learning (experimental)."
+     group       = "Preprocessing.Attributes.Aggregation"/>
+
+  <operator 
+     name        = "NameBasedWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.NameBasedWeighting"
+     description = "This operator defines the weights for all features based on a list of regular expressions for the feature names which can be used to set a specified weight to features with a name fulfilling these expressions."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "SingleRuleWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.OneRErrorWeighting"
+     description = "This operator measures the relevance of features by constructing a single rule for each attribute and calculating the errors."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "Relief"   
+     class       = "com.rapidminer.operator.features.weighting.ReliefWeighting"
+     description = "Relief measures the relevance of features by sampling examples and comparing the value of the current feature for the nearest example of the same and of a different class."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "ChiSquaredWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.ChiSquaredWeighting"
+     description = "This operator calculates the relevance of a feature by computing for each attribute of the input example set the value of the chi-squared statistic with respect to the class attribute."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "SymmetricalUncertaintyWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.SymmetricalUncertaintyOperator"
+     description = "This operator calculates the relevance of an attribute by measuring the symmetrical uncertainty with respect to the class."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "ExampleSet2AttributeWeights"   
+     class       = "com.rapidminer.operator.features.weighting.ExampleSet2AttributeWeights"
+     description = "This operator simply creates new attribute weights of 1 for each input attribute."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "AttributeWeights2ExampleSet"   
+     class       = "com.rapidminer.operator.features.weighting.AttributeWeights2ExampleSet"
+     description = "This operator simply creates a new data set where for each attribute the corresponding weight is stored."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "ProcessLog2AttributeWeights"   
+     class       = "com.rapidminer.operator.features.weighting.ProcessLog2AttributeWeights"
+     description = "This operator creates new attribute weights from a attribute names column logged with the ProcessLog operator."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "InfoGainWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.InfoGainWeighting"
+     description = "This operator calculates the relevance of the attributes based on the information gain."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "InfoGainRatioWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.InfoGainRatioWeighting"
+     description = "This operator calculates the relevance of the attributes based on the information gain ratio."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "CorrelationBasedWeighting"
+     class       = "com.rapidminer.operator.features.weighting.CorrelationWeighting"
+     description = "Performs an example weighting based upon the residuals of an unweighted local polynomial regression."
+     group       = "Preprocessing.Data.Weighting" />
+
+  <operator 
+     name        = "GiniIndexWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.GiniWeighting"
+     description = "This operator calculates the relevance of the attributes based on the Gini impurity index."
+     group       = "Preprocessing.Attributes.Weighting"/>
+          
+  <operator 
+     name        = "SVMWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.SVMWeighting"
+     description = "This operator uses the coefficients of a hyperplance calculated by an SVM as feature weights."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "PCAWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.PCAWeighting"
+     description = "This operator uses the factors of a PCA component (usually the first) as feature weights."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "CorpusBasedWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.CorpusBasedFeatureWeighting"
+     description = "This operator uses a corpus of examples to characterize a single class by setting feature weights."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "ForwardWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.ForwardWeighting"
+     description = "Assumes that features are independent and optimizes the weights of the attributes with a linear search."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "BackwardWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.BackwardWeighting"
+     description = "Assumes that features are independent and optimizes the weights of the attributes with a linear search."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "EvolutionaryWeighting"
+     class       = "com.rapidminer.operator.features.weighting.EvolutionaryWeighting"
+     description = "Weight the features with an evolutionary approach."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "PSOWeighting"
+     class       = "com.rapidminer.operator.features.weighting.PSOWeighting"
+     description = "Weight the features with a particle swarm optimization approach."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "InteractiveAttributeWeighting"
+     class       = "com.rapidminer.operator.features.weighting.InteractiveAttributeWeighting"
+     description = "Shows a window with feature weights and allows users to change them."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "StandardDeviationWeighting"   
+     class       = "com.rapidminer.operator.features.weighting.StandardDeviationWeighting"
+     description = "Computes weights based on the (normalized) standard deviation of the attributes."
+     group       = "Preprocessing.Attributes.Weighting"/>
+     
+  <operator 
+     name        = "Attributes2RealValues"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NominalToNumeric"
+     description = "Maps all values to real values."
+     deprecation = "Please use the operator 'Nominal2Numerical' or 'Numerical2Real' instead"
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "NominalNumbers2Numerical"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NominalNumbers2Numerical"
+     description = "Maps all nominal values to numerical values by parsing the numbers if possible."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+     
+  <operator 
+     name        = "GuessValueTypes"     
+     class       = "com.rapidminer.operator.preprocessing.GuessValueTypes"
+     description = "(Re-)guesses all value types and changes them accordingly."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator
+     name        = "Nominal2String"     
+     class       = "com.rapidminer.operator.preprocessing.filter.Nominal2String"
+     description = "Replaces all nominal attributes by corresponding string attributes."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "String2Nominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.String2Nominal"
+     description = "Replaces all string attributes by corresponding nominal attributes."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Numerical2Real"     
+     class       = "com.rapidminer.operator.preprocessing.filter.Numerical2Real"
+     description = "Replaces all numerical attributes (especially integer attributes) by corresponding real valued attributes."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Real2Integer"     
+     class       = "com.rapidminer.operator.preprocessing.filter.Real2Integer"
+     description = "Replaces all real-valued attributes by corresponding integer attributes (rounded or cutted)."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+                    
+  <operator  
+     name        = "Nominal2Date"     
+     class       = "com.rapidminer.operator.preprocessing.filter.Nominal2Date"
+     description = "Parses the nominal values for the specified attribute with respect to the given date format string and transforms the values into date values."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Date2Nominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.Date2Nominal"
+     description = "Parses the date values for the specified date attribute with respect to the given date format string and transforms the values into nominal values."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Date2Numerical"     
+     class       = "com.rapidminer.operator.preprocessing.filter.Date2Numerical"
+     description = "Transforms date values into numerical ones capturing the milliseconds since 01/01/1970 00:00:00 GMT."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+                   
+  <operator 
+     name        = "Nominal2Numeric"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NominalToNumeric"
+     description = "Maps all values to real values (usually simply using the internal indices)."
+     deprecation = "Please use the operator 'Nominal2Numerical' instead"
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Nominal2Numerical"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NominalToNumeric"
+     description = "Maps all values to real values (usually simply using the internal indices)."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+          
+  <operator 
+     name        = "Numeric2Binary"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NumericToBinominal"
+     description = "Maps all numeric values to 'false' if they are in the specified range (typical: equal 0.0) and to 'true' otherwise."
+     deprecation = "Please use the operator 'Numerical2Binominal' instead"
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Numeric2Binominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NumericToBinominal"
+     description = "Maps all numeric values to 'false' if they are in the specified range (typical: equal 0.0) and to 'true' otherwise."
+     deprecation = "Please use the operator 'Numerical2Binominal' instead"
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Numerical2Binominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NumericToBinominal"
+     description = "Maps all numeric values to 'false' if they are in the specified range (typical: equal 0.0) and to 'true' otherwise."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+          
+  <operator 
+     name        = "Numeric2Polynominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NumericToPolynominal"
+     description = "Maps all numeric values simply to the corresponding nominal values. Please use one of the discretization operators if you need more sophisticated nominalization methods."
+     deprecation = "Please use the operator 'Numerical2Polynominal' instead"
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Numerical2Polynominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NumericToPolynominal"
+     description = "Maps all numeric values simply to the corresponding nominal values. Please use one of the discretization operators if you need more sophisticated nominalization methods."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+     
+  <operator 
+     name        = "Numerical2FormattedNominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NumericToFormattedNominal"
+     description = "Reformats all numerical attributes according to the specified settings and change the attributes to nominal."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+     
+  <operator 
+     name        = "AttributeValueMapper"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueMapper"
+     description = "Maps certain values of an attribute to other values."
+     deprecation = "Please use the operator 'Mapping' instead."     
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "Mapping"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueMapper"
+     description = "Maps certain values of an attribute to other values."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "InternalBinominalRemapping"     
+     class       = "com.rapidminer.operator.preprocessing.filter.InternalBinominalRemapping"
+     description = "Corrects the internal value mapping of binominal attributes according to the specified negative and positive values."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "AttributeValueSubstring"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueSubstring"
+     description = "Creates new attributes from nominal attributes which only contain substrings of the original attributes."
+     deprecation = "Please use the operator 'Substring' instead."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "Substring"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueSubstring"
+     description = "Creates new attributes from nominal attributes which only contain substrings of the original attributes."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "Trim"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueTrim"
+     description = "Creates new attributes from nominal attributes which contain the trimmed original values."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+          
+  <operator 
+     name        = "Replace"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueReplace"
+     description = "Creates new attributes from nominal attributes with replaced substrings."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+     
+     <operator 
+     name        = "Dictionary"     
+     class       = "com.rapidminer.operator.preprocessing.filter.ExampleSetToDictionary"
+     description = "Replaces occurrances in nominal attributes specified by a second input example set."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+
+
+  <operator 
+     name        = "Split"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeValueSplit"
+     description = "Creates new attributes from a nominal attribute by dividing the nominal values into parts according to a split criterion."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+          
+  <operator 
+     name        = "AddNominalValue"
+     class       = "com.rapidminer.operator.preprocessing.filter.AddNominalValue"
+     description = "This operator adds an additional value to a specified nominal attribute which is then mapped to a specific index."
+     deprecation = "Please use the operator 'AddValue' instead."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "AddValue"
+     class       = "com.rapidminer.operator.preprocessing.filter.AddNominalValue"
+     description = "This operator adds an additional value to a specified nominal attribute which is then mapped to a specific index."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "MergeNominalValues"     
+     class       = "com.rapidminer.operator.preprocessing.filter.MergeNominalValues"
+     description = "Merges two nominal values of a specified attribute."
+     deprecation = "Please use the operator 'MergeValues' instead."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "MergeValues"     
+     class       = "com.rapidminer.operator.preprocessing.filter.MergeNominalValues"
+     description = "Merges two nominal values of a specified attribute."
+     group       = "Preprocessing.Attributes.Filter.Values"/>
+
+  <operator 
+     name        = "AttributeAdd"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeAdd"
+     description = "Adds a new attribute to the data set with the given name and type."
+     group       = "Preprocessing.Attributes.Filter"/>
+          
+  <operator 
+     name        = "AttributeCopy"     
+     class       = "com.rapidminer.operator.preprocessing.filter.AttributeCopy"
+     description = "Copies a single attribute (only the view on the data column, not the data itself)."
+     group       = "Preprocessing.Attributes.Filter"/>     
+
+  <operator 
+     name        = "BinDiscretization"     
+     class       = "com.rapidminer.operator.preprocessing.discretization.BinDiscretization"
+     description = "Discretize numerical attributes into a user defined number of bins."
+     group       = "Preprocessing.Data.Discretization"/>
+
+  <operator 
+     name        = "MinMaxBinDiscretization"     
+     class       = "com.rapidminer.operator.preprocessing.discretization.MinMaxBinDiscretization"
+     description = "Discretize numerical attributes into a user defined number of bins lying in a user defined value range."
+     group       = "Preprocessing.Data.Discretization"/>
+     
+  <operator 
+     name        = "UserBasedDiscretization"     
+     class       = "com.rapidminer.operator.preprocessing.discretization.UserBasedDiscretization"
+     description = "Discretize numerical attributes into user defined bins."
+     group       = "Preprocessing.Data.Discretization"/>
+
+  <operator 
+     name        = "FrequencyDiscretization"     
+     class       = "com.rapidminer.operator.preprocessing.discretization.FrequencyDiscretization"
+     description = "Discretize numerical attributes into a user defined number of bins with equal frequency."
+     group       = "Preprocessing.Data.Discretization"/>
+
+  <operator 
+     name        = "AbsoluteDiscretization"     
+     class       = "com.rapidminer.operator.preprocessing.discretization.AbsoluteDiscretization"
+     description = "Discretize numerical attributes into bins with user defined number of contained examples."
+     group       = "Preprocessing.Data.Discretization"/>
+
+  <operator 
+     name        = "MinimalEntropyPartitioning" 
+     class       = "com.rapidminer.operator.preprocessing.discretization.MinimalEntropyDiscretization"
+     description = "Discretizes numerical attributes. Bin boundaries are chosen as to minimize the entropy in the induced partitions."
+     group       = "Preprocessing.Data.Discretization"/>
+
+  <operator 
+     name        = "ExampleFilter"
+     class       = "com.rapidminer.operator.preprocessing.filter.ExampleFilter"
+     description = "This operator only allows examples which fulfill a specified condition."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "AttributeFilter"
+     class       = "com.rapidminer.operator.preprocessing.filter.attributes.AttributeFilter"
+     description = "This operator removes attributes which fulfill a specified condition."
+     group       = "Preprocessing.Attributes.Filter"/>
+
+  <operator 
+     name        = "SetData"     
+     class       = "com.rapidminer.operator.preprocessing.filter.SetData"
+     description = "Sets the data of a specified example and attribute to the specified value."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "DateAdjust"     
+     class       = "com.rapidminer.operator.preprocessing.filter.DateAdjust"
+     description = "Adjusts the date in a specified column by adding or subtracting the specified amount of time."
+     group       = "Preprocessing.Data.Filter"/>
+          
+  <operator 
+     name        = "RemoveDuplicates"     
+     class       = "com.rapidminer.operator.preprocessing.filter.RemoveDuplicates"
+     description = "Removes those examples from the given example set which are duplicates to others based on the given attribute specification."
+     group       = "Preprocessing.Data.Filter"/>
+     
+  <operator 
+     name        = "TFIDFFilter"     
+     class       = "com.rapidminer.operator.preprocessing.filter.TFIDFFilter"
+     description = "Performs a TF-IDF filtering to the input data set."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "Sorting"
+     class       = "com.rapidminer.operator.preprocessing.filter.Sorting"
+     description = "This operator sorts the given example set according to a single attribute."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "NonDominatedSorting"
+     class       = "com.rapidminer.operator.preprocessing.filter.NonDominatedSorting"
+     description = "This operator sorts the given example set according a set of attributes such that dominated examples will be sorted after non-dominated examples."
+     group       = "Preprocessing.Data.Filter"/>
+          
+  <operator 
+     name        = "ExampleRangeFilter"
+     class       = "com.rapidminer.operator.preprocessing.filter.ExampleRangeFilter"
+     description = "This only allows examples in the specified index range."
+     group       = "Preprocessing.Data.Filter"/>
+          
+  <operator 
+     name        = "Permutation"     
+     class       = "com.rapidminer.operator.preprocessing.filter.PermutationOperator"
+     description = "Permutates the examples in the table. Caution: will increase memory usage!"
+     group       = "Preprocessing.Data.Filter"/>
+          
+  <operator 
+     name        = "FeatureGeneration"     
+     class       = "com.rapidminer.operator.features.construction.FeatureGenerationOperator"
+     description = "The feature generation operator generates new user defined features."
+     deprecation = "Please use the operator 'AttributeConstruction' instead."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "AttributeConstruction"     
+     class       = "com.rapidminer.operator.features.construction.AttributeConstruction"
+     description = "This operator constructs new user defined attributes from mathematical expressions."
+     group       = "Preprocessing.Attributes.Generation"/>
+          
+  <operator 
+     name        = "ConditionedFeatureGeneration"     
+     class       = "com.rapidminer.operator.features.construction.ConditionedFeatureGeneration"
+     description = "The conditioned feature generation operator allows to generate features with values dependent on conditions."
+     group       = "Preprocessing.Attributes.Generation"/>     
+
+  <operator 
+    name         = "AttributeAggregation"     
+     class       = "com.rapidminer.operator.features.construction.AttributeAggregationOperator"
+     description = "This operator constructs a new attribute by aggregating values of other attributes in every example."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "GaussAttributeGeneration"     
+     class       = "com.rapidminer.operator.features.construction.GaussFeatureConstructionOperator"
+     description = "Creates a gaussian function based on a given attribute and a specified mean and standard deviation sigma."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "ProductAttributeGeneration"     
+     class       = "com.rapidminer.operator.features.construction.ProductGenerationOperator"
+     description = "Creates all products based on the attributes specified by regular expressions."
+     group       = "Preprocessing.Attributes.Generation"/>
+          
+  <operator 
+     name        = "LinearCombination"     
+     class       = "com.rapidminer.operator.features.construction.LinearCombinationOperator"
+     description = "This operator created a new example set containing only one feature: the linear combination of all input attributes."
+     deprecation = "Please use the operator 'AttributeAggregation' instead."
+     group       = "Preprocessing.Attributes.Generation"/>
+     
+  <operator 
+     name        = "CompleteFeatureGeneration"     
+     class       = "com.rapidminer.operator.features.construction.CompleteFeatureGenerationOperator"
+     description = "The feature generation operator generates new features via applying a set of functions on all features."
+     group       = "Preprocessing.Attributes.Generation"/>
+
+  <operator 
+     name        = "FourierTransform"     
+     class       = "com.rapidminer.operator.features.transformation.FourierTransform"
+     description = "Uses the label as function of each attribute and calculates the fourier transformations as new attributes."
+     group       = "Preprocessing.Attributes.Transformation"/>
+
+  <operator 
+     name        = "FeatureValueTypeFilter"
+     class       = "com.rapidminer.operator.preprocessing.filter.FeatureValueTypeFilter"
+     description = "This operator switches off those features whose value type matches the given one."
+     group       = "Preprocessing.Attributes.Filter"/>
+
+  <operator 
+     name        = "FeatureBlockTypeFilter"
+     class       = "com.rapidminer.operator.preprocessing.filter.FeatureBlockTypeFilter"
+     description = "This operator switches off those features whose block type matches the given one."
+     group       = "Preprocessing.Attributes.Filter"/>
+
+  <operator 
+     name        = "FeatureNameFilter"
+     class       = "com.rapidminer.operator.preprocessing.filter.FeatureNameFilter"
+     description = "This operator switches off those features whose name matches the given one (regular expressions are also allowed)."
+     group       = "Preprocessing.Attributes.Filter"/>
+
+  <operator
+     name        = "FeatureRangeRemoval"
+     class       = "com.rapidminer.operator.preprocessing.filter.FeatureRangeRemoval"
+     description = "This operator removes a range of features."
+     group       = "Preprocessing.Attributes.Filter"/>
+
+  <operator 
+     name        = "InfiniteValueReplenishment"     
+     class       = "com.rapidminer.operator.preprocessing.filter.InfiniteValueReplenishment"
+     description = "Replaces infinite values in examples."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "Partition"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.PartitionOperator"
+     description = "Partitions an example set into subsets according to the specified relative sizes."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "Sampling"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.SimpleSampling"
+     description = "Creates a sample from an example set by drawing a fraction."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "KennardStoneSampling"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.KennardStoneSampling"
+     description = "Creates a sample from an example set using the Kennard-Stone algorithm."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "Bootstrapping"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.Bootstrapping"
+     description = "Creates a bootstrapped sample by sampling with replacement."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "WeightedBootstrapping"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.WeightedBootstrapping"
+     description = "Creates a bootstrapped sample by weighted sampling with replacement."
+     group       = "Preprocessing.Data.Sampling"/>
+          
+  <operator 
+     name        = "AbsoluteSampling"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.AbsoluteSampling"
+     description = "Creates a sample from an example set by drawing an exact number of examples."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "StratifiedSampling"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.RatioStratifiedSampling"
+     description = "Creates a stratified sample from an example set by drawing a fraction."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "AbsoluteStratifiedSampling"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.AbsoluteStratifiedSampling"
+     description = "Creates a stratified sample from an example set by drawing a given number of examples."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator 
+     name        = "ModelBasedSampling"     
+     class       = "com.rapidminer.operator.preprocessing.sampling.ModelBasedSampling"
+     description = "Creates a sample from an example set. The sampling is based on a model and is constructed to focus on examples not yet explained."
+     group       = "Preprocessing.Data.Sampling"/>
+
+  <operator
+     name        = "MissingValueReplenishment"     
+     class       = "com.rapidminer.operator.preprocessing.filter.MissingValueReplenishment"
+     description = "Replaces missing values in examples."
+     group       = "Preprocessing.Data.Filter"/>
+     
+  <operator
+     name        = "MissingValueReplenishmentView"     
+     class       = "com.rapidminer.operator.preprocessing.filter.MissingValueReplenishmentView"
+     description = "Replaces missing values in examples. In contrast to the usual missing value replenishment, this operator does not change the underlying data but replaces the missing values on the fly by using a new view on the data."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "MissingValueImputation"
+     class       = "com.rapidminer.operator.preprocessing.filter.MissingValueImputation"
+     description = "Replaces missing values in examples by applying a model learned for missing values."
+     group       = "Preprocessing.Data.Filter"/>
+
+  <operator 
+     name        = "EqualLabelWeighting"
+     class       = "com.rapidminer.operator.preprocessing.weighting.EqualLabelWeighting"
+     description = "Distributes weight over examples, so that per label weights sum up equally."
+     group       = "Preprocessing.Data.Weighting"/>
+     
+  <operator 
+     name        = "Normalization"     
+     class       = "com.rapidminer.operator.preprocessing.normalization.Normalization"
+     description = "Normalizes the attribute values for a specified range."
+     group       = "Preprocessing"/>
+
+  <operator 
+     name        = "Nominal2Binary"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NominalToBinominal"
+     description = "Maps all nominal values to binary attributes."
+     deprecation = "Please use the operator 'Nominal2Binominal' instead."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+
+  <operator 
+     name        = "Nominal2Binominal"     
+     class       = "com.rapidminer.operator.preprocessing.filter.NominalToBinominal"
+     description = "Maps all nominal values to binominal (binary) attributes."
+     group       = "Preprocessing.Attributes.Filter.Converter"/>
+     
+  <operator 
+     name        = "RemoveUselessAttributes"
+     class       = "com.rapidminer.operator.features.selection.RemoveUselessFeatures"
+     description = "Remove all useless attributes from an example set."
+     group       = "Preprocessing.Attributes.Selection"/>
+     
+  <operator 
+     name        = "NoiseGenerator"
+     class       = "com.rapidminer.operator.preprocessing.NoiseOperator"
+     description = "Adds noise to existing attributes or add random attributes."
+     group       = "Preprocessing.Other"/>
+
+  <operator 
+     name        = "Obfuscator"     
+     class       = "com.rapidminer.operator.preprocessing.Obfuscator"
+     description = "Replaces all nominal values and attribute names by random strings."
+     group       = "Preprocessing.Other"/>
+
+  <operator 
+     name        = "DeObfuscator"     
+     class       = "com.rapidminer.operator.preprocessing.Deobfuscator"
+     description = "Replaces all obfuscated values and attribute names by the ones given in a file."
+     group       = "Preprocessing.Other"/>
+
+  <operator 
+     name        = "ExampleSetJoin"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetJoin"
+     description = "Build the join of two example sets using the id attributes of the sets in order to identify the same examples."
+     group       = "Preprocessing.Join"/>
+
+  <operator 
+     name        = "ExampleSetSuperset"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetSuperset"
+     description = "This operator gets two example sets and adds new features to each of both example sets so that both example sets consist of the same set of features."
+     group       = "Preprocessing.Join"/>
+     
+  <operator 
+     name        = "ExampleSetUnion"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetUnion"
+     description = "This operator first builds the union set / superset for both input example sets and merges both extended sets into a new one."
+     group       = "Preprocessing.Join"/>     
+
+  <operator 
+     name        = "ExampleSetMinus"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetMinus"
+     description = "This operator returns these examples of an example set whose IDs are not contained within another example set."
+     group       = "Preprocessing.Join"/>
+
+  <operator 
+     name        = "ExampleSetIntersect"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetIntersect"
+     description = "This operator returns these examples of an example set whose IDs are contained within another example set."
+     group       = "Preprocessing.Join"/>
+     
+  <operator 
+     name        = "ExampleSetCartesian"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetCartesian"
+     description = "Build the cartesian product of two example sets. In contrast to the ExampleSetJoin operator Id attributes are not needes."
+     group       = "Preprocessing.Join"/>
+
+  <operator 
+     name        = "ExampleSetMerge"     
+     class       = "com.rapidminer.operator.preprocessing.join.ExampleSetMerge"
+     description = "Build a merged example set from two or more compatible example sets by adding all examples into a combined set."
+     group       = "Preprocessing.Join"/>
+     
+  <operator 
+     name        = "ExampleSetTranspose"     
+     class       = "com.rapidminer.operator.preprocessing.ExampleSetTranspose"
+     description = "Transposes the input example set similar to the matrix operator transpose."
+     group       = "Preprocessing.Other"/>
+
+  <operator 
+     name        = "UseRowAsAttributeNames"     
+     class       = "com.rapidminer.operator.preprocessing.UseRowAsAttributeNames"
+     description = "Uses the specified row as new attibute names and deletes the row from the data set."
+     group       = "Preprocessing.Other"/>
+               
+  <operator 
+     name        = "PCA"
+     class       = "com.rapidminer.operator.features.transformation.PCA"
+     description = "Performs a principal component analysis (PCA) using the covariance matrix."
+     group       = "Preprocessing.Attributes.Transformation"/>
+     
+  <operator 
+     name        = "KernelPCA"
+     class       = "com.rapidminer.operator.features.transformation.KernelPCA"
+     description = "Performs a kernel principal component analysis (PCA)."
+     group       = "Preprocessing.Attributes.Transformation"/>
+
+  <operator 
+     name        = "SVDReduction"
+     class       = "com.rapidminer.operator.features.transformation.SVDReduction"
+     description = "Performs a dimensionality reduction based on Singular Value Decomposition (SVD)."
+     group       = "Preprocessing.Attributes.Transformation"/>
+     
+  <operator 
+     name        = "SOMDimensionalityReduction"
+     class       = "com.rapidminer.operator.features.transformation.SOMDimensionalityReduction"
+     description = "Trains a self-organizing map and applyes the examples on the map. The resulting coordinates are used as new attributes."
+     group       = "Preprocessing.Attributes.Transformation"/>
+     
+  <operator 
+     name        = "GHA"
+     class       = "com.rapidminer.operator.features.transformation.GHA"
+     description = "Generalized Hebbian Algorithm (GHA). Performs an iterative principal components analysis."
+     group       = "Preprocessing.Attributes.Transformation"/>
+
+  <operator 
+     name        = "FastICA"
+     class       = "com.rapidminer.operator.features.transformation.FastICA"
+     description = "Performs an independent component analysis (ICA)."
+     group       = "Preprocessing.Attributes.Transformation"/>
+
+  <operator 
+     name        = "ComponentWeights"
+     class       = "com.rapidminer.operator.features.weighting.ComponentWeights"
+     description = "Creates the AttributeWeights of models containing components like PCA, GHA or FastICA."
+     group       = "Preprocessing.Attributes.Weighting"/>
+
+  <operator 
+     name        = "RemoveCorrelatedFeatures"
+     class       = "com.rapidminer.operator.features.selection.RemoveCorrelatedFeatures"
+     description = "Removes correlated features."
+     group       = "Preprocessing.Attributes.Selection"/>
+     
+  <operator 
+     name        = "DensityBasedOutlierDetection"     
+     class       = "com.rapidminer.operator.preprocessing.outlier.DBOutlierOperator"
+     description = "Identifies outliers in the given ExampleSet based on the data density."
+     group       = "Preprocessing.Data.Outlier"/>
+
+  <operator 
+     name        = "LOFOutlierDetection"     
+     class       = "com.rapidminer.operator.preprocessing.outlier.LOFOutlierOperator"
+     description = "Identifies outliers in the given ExampleSet based on local outlier factors."
+     group       = "Preprocessing.Data.Outlier"/>
+
+  <operator 
+     name        = "DistanceBasedOutlierDetection"     
+     class       = "com.rapidminer.operator.preprocessing.outlier.DKNOutlierOperator"
+     description = "Identifies n outliers in the given ExampleSet based on the distance to their k nearest neighbors."
+     group       = "Preprocessing.Data.Outlier"/>
+
+
+  <!-- Postprocessing Operators -->
+
+  <operator 
+     name        = "FrequentItemSetUnificator"
+     class       = "com.rapidminer.operator.learner.associations.FrequentItemSetUnificator"
+     description = "Compares sets of frequent item sets and removes common not unique sets."
+     group       = "Postprocessing"/>
+          
+  <operator 
+     name        = "PlattScaling"     
+     class       = "com.rapidminer.operator.postprocessing.PlattScaling"
+     description = "Turns confidence scores of boolean classifiers into probability estimates."
+     group       = "Postprocessing"/>
+
+  <operator 
+     name        = "ThresholdFinder"     
+     class       = "com.rapidminer.operator.postprocessing.ThresholdFinder"
+     description = "Finds a threshold for given prediction confidences (soft predictions) , costs and distributional information in order to turn it into a crisp classification. The optimization step is based on ROC analysis."
+     group       = "Postprocessing"/>
+
+  <operator 
+     name        = "ThresholdCreator"     
+     class       = "com.rapidminer.operator.postprocessing.ThresholdCreator"
+     description = "Creates a user defined threshold for given prediction confidences (soft predictions) in order to turn it into a crisp classifier."
+     group       = "Postprocessing"/>
+
+  <operator 
+     name        = "ThresholdApplier"     
+     class       = "com.rapidminer.operator.postprocessing.ThresholdApplier"
+     description = "Applies a threshold on soft classified data."
+     group       = "Postprocessing"/>
+
+  <operator 
+     name        = "UncertainPredictionsTransformation"     
+     class       = "com.rapidminer.operator.postprocessing.SimpleUncertainPredictionsTransformation"
+     description = "Sets all predictions to 'unknown' (missing value) if the corresponding confidence is smaller than the specified value."
+     group       = "Postprocessing"/>
+
+  <operator 
+     name        = "WindowExamples2OriginalData"
+     class       = "com.rapidminer.operator.postprocessing.WindowExamples2OriginalData"
+     description = "Transform a data set transformed with a multivariate windowing followed by a WindowExamples2ModelingData operator into a data set where both the label and the predicted label (if applicable, i.e. after a ModelApplier) are transformed into their original data ranges by adding the values of the base value attribute."
+     group       = "Postprocessing"/>
+     
+     
+  <!-- Meta Operators -->
+
+  <operator 
+     name        = "ProcessEmbedder" 
+     class       = "com.rapidminer.operator.meta.ProcessEmbeddingOperator"
+     description = "This operator embeds a complete process previously written into a file."
+     group       = "Meta"/>
+     
+  <operator 
+     name        = "ExperimentEmbedder" 
+     class       = "com.rapidminer.operator.meta.ProcessEmbeddingOperator"
+     description = "This operator embeds a complete experiment previously written into a file."
+     deprecation = "Please use the operator 'ProcessEmbedder' instead (and note the change of the parameter name!)"
+     group       = "Meta"/>
+
+  <operator 
+     name        = "DirectoryIterator" 
+     class       = "com.rapidminer.operator.meta.FileIterator"
+     description = "This operator iterates over all files in a directory and delivers their paths and names as macro to the inner operators."
+     deprecation = "Please use the operator 'FileIterator' instead."     
+     group       = "Meta.Other"/>
+
+  <operator 
+     name        = "FileIterator" 
+     class       = "com.rapidminer.operator.meta.FileIterator"
+     description = "This operator iterates over all files in a directory and delivers their paths and names as macro to the inner operators."
+     group       = "Meta.Other"/>
+     
+  <operator 
+     name        = "BatchProcessing" 
+     class       = "com.rapidminer.operator.meta.BatchProcessing"
+     description = "Creates batches from the input examples and performs its inner operators on each of these batches which might be useful for applying methods on very large data sets directly in databases."
+     group       = "Meta"/>
+     
+  <operator 
+     name        = "SplitChain" 
+     class       = "com.rapidminer.operator.meta.RatioSplitChain"
+     description = "Splits an example set in two parts based on a user defined ratio and uses the output of the first child and the second part as input for the second child."
+     group       = "Meta.Control"/>
+
+  <operator 
+     name        = "AbsoluteSplitChain" 
+     class       = "com.rapidminer.operator.meta.AbsoluteSplitChain"
+     description = "Splits an example set in two parts based on user defined set sizes and uses the output of the first child and the second part as input for the second child."
+     group       = "Meta.Control"/>
+          
+  <operator 
+     name        = "OperatorEnabler" 
+     class       = "com.rapidminer.operator.meta.OperatorEnabler"
+     description = "This operator can be used to automatically enable or disable inner operators."
+     group       = "Meta.Control"/>
+
+  <operator 
+     name        = "OperatorSelector" 
+     class       = "com.rapidminer.operator.meta.OperatorSelector"
+     description = "This operator can be used to select a single inner operator which should be performed, e.g. by means of parameter iteration or optimization operators."
+     group       = "Meta.Control"/> 
+     
+  <operator 
+     name        = "ProcessBranch" 
+     class       = "com.rapidminer.operator.meta.branch.ProcessBranch"
+     description = "This operator provides a conditional execution of operators."
+     group       = "Meta.Control"/>
+          
+  <operator 
+     name        = "ErrorNeglector" 
+     class       = "com.rapidminer.operator.meta.ExceptionHandling"
+     description = "This operator performs the inner operator and neglects any errors. In this case, no inner output will be returned."
+     deprecation = "Please use the operator 'ExceptionHandling' instead."
+     group       = "Meta.Other"/>   
+             
+  <operator 
+     name        = "ExceptionHandling" 
+     class       = "com.rapidminer.operator.meta.ExceptionHandling"
+     description = "This operator performs the inner operator and neglects any errors. In this case, no inner output will be returned."
+     group       = "Meta.Other"/> 
+                    
+  <operator 
+     name        = "LearningCurve"     
+     class       = "com.rapidminer.operator.meta.LearningCurveOperator"
+     description = "Iterates its inner operator for an increasing number of samples and collects the performances."
+     group       = "Meta.Other"/>
+
+  <operator 
+     name        = "PartialExampleSetLearner"     
+     class       = "com.rapidminer.operator.meta.PartialExampleSetLearner"
+     description = "Uses only a fraction of the data to apply the inner operator on it."
+     group       = "Meta.Other"/>
+     
+  <operator 
+     name        = "ExampleSetIterator"     
+     class       = "com.rapidminer.operator.meta.ExampleSetIterator"
+     description = "Performs its inner operators for each example set found in input."
+     group       = "Meta.Control"/>
+
+  <operator 
+     name        = "MultipleLabelIterator"     
+     class       = "com.rapidminer.operator.meta.MultipleLabelIterator"
+     description = "Performs its inner operators for each label found in input example set."
+     group       = "Meta.Other"/>
+
+ <operator
+     name        = "RepeatUntilOperatorChain"
+     class       = "com.rapidminer.operator.meta.RepeatUntilOperatorChain"
+     description = "Performs its inner operators until some condition is met."
+     group       = "Meta.Control"/>
+          
+  <operator 
+     name        = "IteratingOperatorChain"     
+     class       = "com.rapidminer.operator.meta.IteratingOperatorChain"
+     description = "Performs its inner operators k times."
+     group       = "Meta.Control"/>
+
+  <operator 
+     name        = "FeatureSubsetIteration"     
+     class       = "com.rapidminer.operator.meta.FeatureSubsetIteration"
+     description = "Performs its inner operator for all specified feature subsets (useful for brute force evaluations in combination with the ProcessLog operator)."
+     group       = "Meta.Control"/>
+
+  <operator 
+     name        = "FeatureIterator" 
+     class       = "com.rapidminer.operator.meta.FeatureIterator"
+     description = "Iterates over the given features and applies the inner operators for each feature where the inner operators can access the current feature name by a macro."
+     group       = "Meta.Control"/>
+     
+  <operator 
+     name        = "ValueSubgroupIterator" 
+     class       = "com.rapidminer.operator.meta.ValueSubgroupIteration"
+     description = "Iterates over the values of the specified attributes and applies the inner operators on the subgroups which exhibit the current attribute value."
+     group       = "Meta.Control"/>     
+
+  <operator 
+     name        = "ValueIterator" 
+     class       = "com.rapidminer.operator.meta.ValueIteration"
+     description = "Iterates over the values of the specified attributes and applies the inner operators on the input example set while the current value can be accessed via a macro. In contrast to the ValueSubgroupIterator operator the inner operators are applied on the complete example set."
+     group       = "Meta.Control"/>   
+               
+  <operator 
+     name        = "RandomOptimizer"     
+     class       = "com.rapidminer.operator.meta.RandomOptimizationChain"
+     description = "Performs its inner operators k times and returns the best results."
+     group       = "Meta.Other"/>
+
+  <operator 
+     name        = "ParameterSetter"
+     class       = "com.rapidminer.operator.meta.ParameterSetter"
+     description = "Applies a set of parameters. Operator names may be remapped."
+     group       = "Meta.Parameter"/>
+
+  <operator 
+     name        = "ParameterCloner"
+     class       = "com.rapidminer.operator.meta.ParameterCloner"
+     description = "Applies a set of parameters of a source operator on a target operator."
+     group       = "Meta.Parameter"/>
+
+  <operator 
+     name        = "GridParameterOptimization"     
+     class       = "com.rapidminer.operator.meta.GridSearchParameterOptimizationOperator"
+     description = "This operator finds the optimal values for parameters."
+     group       = "Meta.Parameter"/>
+
+  <operator 
+     name        = "QuadraticParameterOptimization"     
+     class       = "com.rapidminer.operator.meta.QuadraticParameterOptimizationOperator"
+     description = "This operator finds the optimal values for parameters using a quadratic interaction model."
+     group       = "Meta.Parameter"/>
+
+  <operator 
+     name        = "EvolutionaryParameterOptimization"
+     class       = "com.rapidminer.operator.meta.EvolutionaryParameterOptimizationOperator"
+     description = "This operator finds the optimal values for parameters using an evolutionary computation approach."
+     group       = "Meta.Parameter"/>
+
+  <operator 
+     name        = "ParameterIteration"     
+     class       = "com.rapidminer.operator.meta.ParameterIteration"
+     description = "This operator just iterates through all defined parameter combinations."
+     group       = "Meta.Parameter"/>
+
+  <operator 
+     name        = "AverageBuilder"     
+     class       = "com.rapidminer.operator.meta.AverageBuilder"
+     description = "Builds the average of input average vectors (e.g. performance) of the same type."
+     group       = "Meta.Other"/>
+
+  <operator 
+     name        = "XVPrediction"     
+     class       = "com.rapidminer.operator.meta.XVPrediction"
+     description = "Predicts the examples in a cross-validation-like fashion."
+     group       = "Meta.Control"/>
+
+  <operator 
+     name        = "ClusterIteration"    
+     class       = "com.rapidminer.operator.meta.ClusterIterator"
+     description = "Applies all inner operators to all clusters."
+     group       = "Meta.Control"/> 
+     
+  <operator 
+     name        = "SeriesPrediction"    
+     class       = "com.rapidminer.operator.meta.UnivariateLabelSeriesPrediction"
+     description = "Creates predictions for an ordered time series given as the label attribute of an example set."
+     group       = "Meta.Other"/> 
+
+
+  <!-- Visualization Operators -->
+
+  <operator 
+     name        = "ProcessLog"
+     class       = "com.rapidminer.operator.visualization.ProcessLogOperator"
+     description = "Saves almost arbitrary data to a log table (also possibly in a file) and create statistics for online plotting of values/parameters provided by operators."
+     group       = "Visualization"/>
+
+  <operator 
+     name        = "ClearProcessLog"
+     class       = "com.rapidminer.operator.visualization.ClearProcessLog"
+     description = "Clears a table generated by a ProcessLog operator."
+     group       = "Visualization.Logging"/>
+     
+  <operator 
+     name        = "ExperimentLog"     
+     class       = "com.rapidminer.operator.visualization.ProcessLogOperator"
+     description = "Saves almost arbitrary data to a log file and create statistics for online plotting of values/parameters provided by operators."
+     deprecation = "Please use the operator 'ProcessLog' instead."
+     group       = "Visualization.Logging"/>
+
+  <operator 
+     name        = "ProcessLog2ExampleSet"     
+     class       = "com.rapidminer.operator.visualization.ProcessLog2ExampleSet"
+     description = "Transforms the data generated by the ProcessLog operator into an example set which can be used by other operators."
+     group       = "Visualization.Logging"/>
+
+  <operator 
+     name        = "Data2Log"     
+     class       = "com.rapidminer.operator.visualization.Data2Log"
+     description = "Reads the specified value from the input example set and provides the value for logging purposes."
+     group       = "Visualization.Logging"/>
+
+  <operator 
+     name        = "Macro2Log"     
+     class       = "com.rapidminer.operator.visualization.Macro2Log"
+     description = "Reads the value from the specified macro and provides the value for logging purposes."
+     group       = "Visualization.Logging"/>
+          
+  <operator 
+     name        = "ExampleVisualizer"     
+     class       = "com.rapidminer.operator.visualization.ExampleVisualizationOperator"
+     description = "Allows the visualization of examples (attribute values) in the plot view of an example set (double click on data point)."
+     group       = "Visualization"/>
+
+  <operator 
+     name        = "DatabaseExampleVisualizer"     
+     class       = "com.rapidminer.operator.visualization.DatabaseExampleVisualizationOperator"
+     description = "Allows the visualization of examples (attribute values) in the plot view of an example set (double click on data point). The data is directly derived from the specified database table."
+     group       = "Visualization"/>
+     
+  <operator
+     name        = "DataStatistics"     
+     class       = "com.rapidminer.operator.visualization.DataStatisticsOperator"
+     description = "Calculates some simple data statistics usually displayed by the GUI (only necessary for command line processes)."
+     group       = "Visualization"/>
+     
+
+  <operator
+     name        = "ANOVAMatrix"     
+     class       = "com.rapidminer.operator.visualization.dependencies.ANOVAMatrixOperator"
+     description = "Performs an ANOVA significance test for a all numerical attribute based on the groups defined by all other nominal attributes."
+     group       = "Visualization.Dependencies"/>
+          
+  <operator 
+     name        = "CorrelationMatrix"
+     class       = "com.rapidminer.operator.visualization.dependencies.CorrelationMatrixOperator"
+     description = "Determines the correlation between all attributes and can produce a weight vector based on correlations."
+     group       = "Visualization.Dependencies"/>
+
+  <operator 
+     name        = "CovarianceMatrix"
+     class       = "com.rapidminer.operator.visualization.dependencies.CovarianceMatrixOperator"
+     description = "Determines the covariance between all attributes."
+     group       = "Visualization.Dependencies"/>
+
+  <operator 
+     name        = "TransitionMatrix"
+     class       = "com.rapidminer.operator.visualization.dependencies.TransitionMatrixOperator"
+     description = "Determines the transition probabilities of nominal values."
+     group       = "Visualization.Dependencies"/>
+
+  <operator 
+     name        = "TransitionGraph"
+     class       = "com.rapidminer.operator.visualization.dependencies.TransitionGraphOperator"
+     description = "Creates a graphical representation of transitions defined by source and target attributes."
+     group       = "Visualization.Dependencies"/>
+
+  <operator 
+     name        = "MutualInformationMatrix"
+     class       = "com.rapidminer.operator.visualization.dependencies.MutualInformationMatrixOperator"
+     description = "Determines the mutual information between all attributes."
+     group       = "Visualization.Dependencies"/>
+
+  <operator 
+     name        = "RainflowMatrix"
+     class       = "com.rapidminer.operator.visualization.dependencies.RainflowMatrixOperator"
+     description = "Determines the rainflow matrix for a specified attribute."
+     group       = "Visualization.Series"/>
+          
+  <operator
+     name        = "LiftChart"     
+     class       = "com.rapidminer.operator.visualization.LiftChartGenerator"
+     description = "Generates a lift chart for the given binominal model and input data set."
+     group       = "Visualization"/>
+
+  <operator
+     name        = "LiftParetoChart"     
+     class       = "com.rapidminer.operator.visualization.LiftParetoChartGenerator"
+     description = "Generates a lift chart for the given model and input data set based on discretized confidences and a Pareto chart."
+     group       = "Visualization"/>
+     
+  <operator
+     name        = "ROCChart"     
+     class       = "com.rapidminer.operator.visualization.ROCChartGenerator"
+     description = "Generates a ROC chart for the given binominal model and input data set."
+     group       = "Visualization"/>
+
+  <operator
+     name        = "ROCComparator"     
+     class       = "com.rapidminer.operator.visualization.ROCBasedComparisonOperator"
+     description = "Generates a ROC chart for the models created by each of the inner learners and plot all charts in the same plotter."
+     group       = "Visualization"/>
+          
+  <operator
+     name        = "ModelVisualizer"     
+     class       = "com.rapidminer.operator.visualization.SOMModelVisualization"
+     description = "Generates a SOM plot (transforming arbitrary number of dimensions to two) of the given data set and colorizes the landscape with the predictions of the given model."
+     group       = "Visualization"/>
+     
+  <operator
+     name        = "FormulaExtractor"     
+     class       = "com.rapidminer.operator.visualization.FormulaExtractor"
+     description = "Generates a formula from a given model for models which are capable of producing formulas."
+     group       = "Visualization"/>
+          
+         
+  <!-- OLAP Operators -->
+
+  <operator
+     name        = "GroupedANOVA"     
+     class       = "com.rapidminer.operator.preprocessing.transformation.GroupedANOVAOperator"
+     description = "Performs an ANOVA significance test for a single numerical attribute based on the groups defined by another (nominal) attribute."
+     group       = "OLAP"/>
+          
+  <operator
+     name        = "Aggregation"     
+     class       = "com.rapidminer.operator.preprocessing.transformation.AggregationOperator"
+     description = "Performs one of the aggregation functions (count, sum...) known from SQL (allows also grouping)."
+     group       = "OLAP"/>
+     
+  <operator
+  	name 		 = "Example2AttributePivoting"
+  	class		 = "com.rapidminer.operator.preprocessing.transformation.Example2AttributePivoting"
+  	description  = "Transforms an example set by grouping multiple examples of single units to single examples."
+  	group		 = "OLAP"/>
+
+  <operator
+  	name 		 = "Attribute2ExamplePivoting"
+  	class		 = "com.rapidminer.operator.preprocessing.transformation.Attribute2ExamplePivoting"
+  	description  = "Transforms an example set by dividing examples containing multiple observations (in attributes) into multiple examples."
+  	group		 = "OLAP"/>  	
+  	
+  <operator 
+     name        = "GroupBy"     
+     class       = "com.rapidminer.operator.preprocessing.GroupByOperator"
+     description = "Partitions an example set according to the values of a single nominal or integer attributes."
+     group       = "OLAP"/>
+       	
+     
+  <!-- Data generation Operators -->
+
+  <operator 
+     name        = "ExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.ExampleSetGenerator"
+     description = "Generates an example set based on numerical attributes."
+     group       = "IO.Generator"/>
+
+  <operator 
+     name        = "NominalExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.NominalExampleSetGenerator"
+     description = "Generates an example set based on nominal attributes."
+     group       = "IO.Generator"/>
+
+  <operator 
+     name        = "MassiveDataGenerator"     
+     class       = "com.rapidminer.operator.generator.MassiveDataGenerator"
+     description = "Generates huge amounts of data for testing purposes."
+     group       = "IO.Generator"/>
+
+  <operator 
+     name        = "DirectMailingExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.DirectMailingExampleSetGenerator"
+     description = "Generates data for testing purposes based on a direct mailing data set."
+     group       = "IO.Generator"/>
+
+  <operator 
+     name        = "UpSellingExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.UpSellingExampleSetGenerator"
+     description = "Generates data for testing purposes based on an up-selling data set."
+     group       = "IO.Generator"/>
+
+  <operator 
+     name        = "ChurnReductionExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.ChurnReductionExampleSetGenerator"
+     description = "Generates data for testing purposes based on a churn reduction data set."
+     group       = "IO.Generator"/>
+     
+  <operator 
+     name        = "TeamProfitExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.TeamProfitExampleSetGenerator"
+     description = "Generates data for testing purposes based on a team profit data set."
+     group       = "IO.Generator"/>
+
+  <operator 
+     name        = "SalesExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.SalesExampleSetGenerator"
+     description = "Generates data for testing purposes based on a sales data set."
+     group       = "IO.Generator"/>
+          
+  <operator 
+     name        = "TransfersExampleSetGenerator"     
+     class       = "com.rapidminer.operator.generator.TransfersExampleSetGenerator"
+     description = "Generates data for testing purposes based on a transfers data set."
+     group       = "IO.Generator"/>     
+               
+  <operator 
+     name        = "MultipleLabelGenerator"     
+     class       = "com.rapidminer.operator.generator.MultipleLabelGenerator"
+     description = "Generates an example set based on numerical attributes and with more than one label."
+     group       = "IO.Generator"/>
+
+
+  <!-- Series Operators -->
+
+  <operator 
+     name        = "Single2Series"     
+     class       = "com.rapidminer.operator.preprocessing.series.SingleAttributes2ValueSeries"
+     description = "Changes the value type of all single valued attributes and forms a value series from all attributes."
+     group       = "Preprocessing.Series"/>
+
+  <operator 
+     name        = "Series2WindowExamples"
+     class       = "com.rapidminer.operator.preprocessing.series.UnivariateSeries2WindowExamples"
+     description = "Creates examples from an univariate value series data by windowing and using a label value with respect to a user defined prediction horizon."
+     group       = "Preprocessing.Series"/>
+
+  <operator 
+     name        = "MultivariateSeries2WindowExamples"
+     class       = "com.rapidminer.operator.preprocessing.series.MultivariateSeries2WindowExamples"
+     description = "Creates examples from a multivariate value series data set by windowing the input data."
+     group       = "Preprocessing.Series"/>
+
+  <operator 
+     name        = "FillDataGaps"
+     class       = "com.rapidminer.operator.preprocessing.series.FillDataGaps"
+     description = "This operator fills gaps in the data based on the ID attribute of the data set."
+     group       = "Preprocessing.Series"/>
+               
+  <operator 
+     name        = "WindowExamples2ModelingData"
+     class       = "com.rapidminer.operator.preprocessing.series.WindowExamples2ModelingData"
+     description = "Transform the result of a multivariate windowing into a data set which can be used for training / model application by removing all attributes in the horizon, defining the label, transforming the data into a relative format."
+     group       = "Preprocessing.Series"/>
+          
+  <operator 
+     name        = "LabelTrend2Classification"
+     class       = "com.rapidminer.operator.preprocessing.series.LabelTrend2Classification"
+     description = "This operator iterates over an example set with numeric label and converts the label values to either the class 'up' or the class 'down' based on whether the change from the previous label is positive or negative."
+     group       = "Preprocessing.Series"/>
+
+  <operator 
+     name        = "LagSeries"
+     class       = "com.rapidminer.operator.preprocessing.series.filter.LagSeries"
+     description = "Lags a specified series."
+     group       = "Preprocessing.Series.Filter"/>
+     
+  <operator 
+     name        = "DifferentiateSeries"
+     class       = "com.rapidminer.operator.preprocessing.series.filter.DifferentiateSeries"
+     description = "Extracts changes between subsequent series values."
+     group       = "Preprocessing.Series.Filter"/>
+     
+  <operator 
+     name        = "CumulateSeries"
+     class       = "com.rapidminer.operator.preprocessing.series.filter.CumulateSeries"
+     description = "Generates the cumulative sum series."
+     group       = "Preprocessing.Series.Filter"/>     
+     
+  <operator 
+     name        = "IndexSeries"
+     class       = "com.rapidminer.operator.preprocessing.series.filter.IndexSeries"
+     description = "Calculates an index series from an origional series."
+     group       = "Preprocessing.Series.Filter"/>     
+  
+  <operator 
+     name        = "MovingAverage"     
+     class       = "com.rapidminer.operator.preprocessing.series.filter.MovingAverage"
+     description = "Generates a new attribute containing the moving average series of a series attribute."
+     group       = "Preprocessing.Series.Filter"/>
+     
+  <operator 
+     name        = "ExponentialSmoothing"     
+     class       = "com.rapidminer.operator.preprocessing.series.filter.ExponentialSmoothing"
+     description = "Generates a new attribute which smoothes a given attribute."
+     group       = "Preprocessing.Series.Filter"/>
+     
+  <operator 
+     name        = "Trend"
+     class       = "com.rapidminer.operator.preprocessing.series.filter.Trend"
+     description = "Adds a trend for an attribute which is generated by an inner regression lerner."
+     group       = "Preprocessing.Series.Filter"/>
+     
+  <operator 
+     name        = "SeriesMissingValueReplenishment"     
+     class       = "com.rapidminer.operator.preprocessing.series.filter.SeriesMissingValueReplenishment"
+     description = "Replaces missing value in a time series attribute."
+     group       = "Preprocessing.Series.Filter"/>
+
+  <operator 
+     name        = "EnsureMonotonicty"     
+     class       = "com.rapidminer.operator.preprocessing.series.EnsureMonotonicity"
+     description = "Ensures that all values of a specified attribute are monotonically increasing."
+     group       = "Preprocessing.Series.Filter"/>   
+
+  <!-- Text Operators -->
+      
+ <operator 
+     name        = "TextObjectWriter"     
+     class       = "com.rapidminer.operator.text.TextObjectWriter"
+     description = "Writes a textobject into a file."
+     group       = "IO.Text.TextObject" />
+
+ <operator 
+     name        = "TextObjectLoader"     
+     class       = "com.rapidminer.operator.text.TextObjectLoader"
+     description = "Loads a textobject from file."
+     group       = "IO.Text.TextObject" />
+
+ <operator 
+     name        = "TextExtractor"     
+     class       = "com.rapidminer.operator.text.TextExtractor"
+     description = "Extracts the text of a textobject that matchs a given regular expression and returns it."
+     group       = "IO.Text.TextObject" />
+
+  <operator 
+     name        = "SingleTextObjectInput"     
+     class       = "com.rapidminer.operator.text.SingleTextObjectInput"
+     description = "Generates a textObject a single text."
+     group       = "IO.Text.TextObject" />
+
+  <operator 
+     name        = "TextCleaner"
+     class       = "com.rapidminer.operator.text.TextCleaner"
+     description = "Removes parts of the text matching a given regular expression."
+     group       = "IO.Text.TextObject" />
+              
+  <operator 
+     name        = "TextObject2ExampleSet"
+     class       = "com.rapidminer.operator.text.TextObject2ExampleSet"
+     description = "Generates an exampleSet containing the text as nominal attribute value."
+     group       = "IO.Text.TextObject" />
+     
+  <operator 
+     name        = "TextSegmenter"
+     class       = "com.rapidminer.operator.text.TextSegmenter"
+     description = "Splits a Input TextObject into segments using regular expressions specifiying start and end of segments."
+     group       = "IO.Text.TextObject" />
+     
+</operators>

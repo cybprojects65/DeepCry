@@ -1,0 +1,3 @@
+file,snr,maxSilence,minimumAudioLength,energyWindow4Analysis,pitchWindow4Analysis,featurewindowsize,featurewindowshift,minNFeaturesInCluster,nClasses,nhidden,minibatch,nEpochs,accuracy,precision,recall,f1,tp,tn,fp,fn,kappa,kappa_lk,kappa_f
+C:\Users\Utente\Ricerca\Experiments\NINA Infant Cry\NIDO\NIDO3\NIDO3.wav,16.86060516,0.5,5,0.1,0.1,0.3,0.1,5,2,3,150,2,0.620190707,0.478300878,0.920592645,0.629526498,2326565,2144881,2537664,200682,0.312208649,Fair,Marginal
+C:\Users\Utente\Ricerca\Experiments\NINA Infant Cry\NIDO\NIDO3\NIDO3.wav,16.860605157293293,0.5,5.0,0.1,0.1,0.3,0.1,5,2,3,150,2,0.6361653706514696,0.48985461507399547,0.9163318820835479,0.6384208670548437,2315797,2270823,2411722,211450,0.3343036606334686,Fair,Marginal

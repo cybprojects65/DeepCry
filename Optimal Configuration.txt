@@ -1,0 +1,25 @@
+Cry detection finished for file TIN1.wav
+Accuracy=54.76
+Precision=58.12
+Recall=52.34
+F1=0.55
+FP=5.7s
+FN=7.2s
+TP=7.9s
+TN=7.7s
+Optimal Configuration:
+#####SEGMENTATION#####
+maxSilence=0.5s
+minimumAudioLength=5.0s
+#####FEATURE EXTRACTION#####
+energyWindow4Analysis=0.1s
+pitchWindow4Analysis=0.1s
+featurewindowsize=0.3s
+featurewindowshift=0.1s
+#####CLUSTERING#####
+minNFeaturesInCluster=5
+#####DEEP LEARNING#####
+nClasses=2
+nhidden=3
+minibatch=150
+nEpochs=2
