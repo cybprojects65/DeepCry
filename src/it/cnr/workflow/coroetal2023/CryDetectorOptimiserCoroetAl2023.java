@@ -1,13 +1,15 @@
-package it.cnr.workflow;
+package it.cnr.workflow.coroetal2023;
 
 import java.io.File;
 import java.io.FileWriter;
 
-public class CryDetectorSearcher {
+import it.cnr.workflow.configuration.Configuration;
+
+public class CryDetectorOptimiserCoroetAl2023 {
 
 	public Configuration findOptimalConfiguration(File audio) throws Exception {
 
-		CryDetector cryd = null;
+		CryDetectorCoroetAl2023 cryd = null;
 		Configuration optimalConfig = new Configuration();
 		Configuration curreConfiguration = optimalConfig.clone();
 
@@ -73,10 +75,10 @@ public class CryDetectorSearcher {
 				curreConfiguration = new Configuration(maxSilences[0], minimumAudioLengths[0],
 						energyWindow4Analyses[0], energyWindow4Analyses[0], featurewindowsizes[0],
 						featurewindowshifts[0], minNFeaturesInClusters[0], nClasses, nhiddens[0],
-						minibatches[0], nEpochss[0]);
+						minibatches[0], nEpochss[0],false);
 				
 				optimalConfig = curreConfiguration.clone();
-				cryd = new CryDetector(optimalConfig);
+				cryd = new CryDetectorCoroetAl2023(optimalConfig);
 				cryd.detect(audio);
 				cryd.eval(audio);
 			}
@@ -102,9 +104,9 @@ public class CryDetectorSearcher {
 											curreConfiguration = new Configuration(maxSilence, minimumAudioLength,
 													energyWindow4Analysis, pitchWindow4Analysis, featurewindowsize,
 													featurewindowshift, minNFeaturesInCluster, nClasses, nhidden,
-													minibatch, nEpochs);
+													minibatch, nEpochs,false);
 											
-											cryd = new CryDetector(curreConfiguration);
+											cryd = new CryDetectorCoroetAl2023(curreConfiguration);
 											cryd.detect(audio);
 											cryd.eval(audio);
 											if (cryd.f1 > optimalf1) {

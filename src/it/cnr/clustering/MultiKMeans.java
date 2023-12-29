@@ -236,6 +236,11 @@ public class MultiKMeans implements Serializable {
 
 	public File clusterFeatures(double[][] features, File outputFolder, int minNofPointsToDefineACluster)
 			throws Exception {
+			return clusterFeatures(features, outputFolder, minNofPointsToDefineACluster, -1, -1);
+	}
+	
+	public File clusterFeatures(double[][] features, File outputFolder, int minNofPointsToDefineACluster, int minClusters, int maxClusters)
+			throws Exception {
 
 		File outputFile = new File(outputFolder, "clustering.csv");
 		HashMap<String, String> vectorLabels = new HashMap<>();
@@ -245,9 +250,11 @@ public class MultiKMeans implements Serializable {
 
 		System.out.println("Running Multi Kmeans clustering on " + outputFolder.getName());
 
-		int minClusters = 1;
-		int maxClusters = features.length / minNofPointsToDefineACluster;
-
+		if (minClusters<0)
+			minClusters = 1;
+		if (maxClusters<0)
+			maxClusters = features.length / minNofPointsToDefineACluster;
+		
 		long t0 = System.currentTimeMillis();
 		System.out.println("MultiKmeans clusters " + minClusters + " - " + maxClusters + " min elements "
 				+ minNofPointsToDefineACluster);

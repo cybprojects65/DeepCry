@@ -7,7 +7,7 @@ import java.util.List;
 
 import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.workflow.Configuration;
+import it.cnr.workflow.configuration.Configuration;
 
 public class TrainCryHMM {
 

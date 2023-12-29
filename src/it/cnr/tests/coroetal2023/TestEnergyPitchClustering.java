@@ -1,4 +1,4 @@
-package it.cnr.tests;
+package it.cnr.tests.coroetal2023;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import it.cnr.clustering.MultiKMeans;
 import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.workflow.Configuration;
+import it.cnr.workflow.configuration.Configuration;
 
 public class TestEnergyPitchClustering {
 

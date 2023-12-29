@@ -4,7 +4,7 @@ import java.io.File;
 
 import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.workflow.Configuration;
+import it.cnr.workflow.configuration.Configuration;
 
 public class CreateReferenceFeatures {
 

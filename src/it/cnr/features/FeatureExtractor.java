@@ -12,18 +12,84 @@ import org.apache.commons.io.FileUtils;
 import it.cnr.speech.audiofeatures.SyllabicEnergyPitchExtractor;
 import it.cnr.speech.segmentation.Energy;
 import it.cnr.speech.segmentation.PitchExtractor;
+import it.cnr.workflow.configuration.Configuration;
 
 public class FeatureExtractor {
 
 	public double SNR;
-
+	public Configuration config;
+	
+	public FeatureExtractor() {}
+	
+	public FeatureExtractor(Configuration config) {
+		this.config = config;
+	}
+	
 	public double getSNR() {
 		return SNR;
 	}
 
+	public double[][] extractFeatureMatrix(File audioFile, boolean standardise){
+		
+		//extract energy
+		List<double[]> featureList = new ArrayList<double[]>();
+		double [] energyCurve = getEnergyFeatures(audioFile);
+		System.out.println("Adding energy features");
+		featureList.add(energyCurve);
+		double [] pitchCurve = getPitchFeatures(audioFile);
+		System.out.println("Adding pitch features");
+		featureList.add(pitchCurve);
+		
+		//get min length of vectors
+		int minElements = Integer.MAX_VALUE;
+		for (int i=0;i<featureList.size();i++) {
+			if (minElements>featureList.get(i).length)
+				minElements=featureList.get(i).length;
+		}
+		System.out.println("Number of features: "+featureList.size());
+		System.out.println("Number of samples per feature: "+minElements);
+		System.out.println("Building feature matrix");
+		//one feature vector for each row, one featue for each column
+		int nrows = minElements;
+		int ncols = featureList.size();
+		double [][] featureMatrix =new double[nrows][ncols];
+		for (int i=0;i<nrows;i++) {
+			for (int j=0;j<ncols;j++) {
+				featureMatrix[i][j] = featureList.get(j)[i];
+			}
+		}
+		
+		if (standardise) {
+			System.out.println("Standardising the matrix...");
+			Utils u = new Utils();
+			featureMatrix = u.standardize(featureMatrix);
+			
+		}
+		return featureMatrix;
+	}
+	
+	public double [] getEnergyFeatures(File audioFile) {
+		return new Energy().energyCurve(config.energyWindow4Analysis, audioFile, true);
+	}
+	
+	public double [] getPitchFeatures(File audioFile) {
+		PitchExtractor pitchExtr = new PitchExtractor();
+		pitchExtr.setPitchWindowSec(config.pitchWindow4Analysis);
+		pitchExtr.calculatePitch(audioFile.getAbsolutePath());
+		Double [] pitchCurve = pitchExtr.pitchCurve;
+		double pitch [] = new double[pitchCurve.length];
+		for (int i=0;i<pitchCurve.length;i++) { 
+			if (pitchCurve[i] == null || Double.isNaN(pitchCurve[i]) || Double.isInfinite(pitchCurve[i]))
+				pitch [i]= 0;
+			else
+				pitch [i]= pitchCurve[i].doubleValue();
+		}
+		return pitch;
+	}
+	
 	public File separateFilesBasedOnEnergy(File audioFile, float maxSilence) throws Exception {
 
-		File outputFolder = new File(audioFile.getParentFile(), "energysegmentation_" + maxSilence);
+		File outputFolder = new File(audioFile.getParentFile(), audioFile.getName().replace(".wav","_processing"));
 		long t0 = 0;
 		long t1 = 0;
 
@@ -91,7 +157,7 @@ public class FeatureExtractor {
 			double[] normalisedEnergyCurve = null;
 
 			try {
-				normalisedEnergyCurve = nrg.energyCurve(energyWindowSec, fs, false, true);
+				normalisedEnergyCurve = nrg.energyCurve(energyWindowSec, fs, true);
 			} catch (Exception e) {
 				System.out.println("Cannot extract energy from " + fs.getName() + " (insufficient data  < "
 						+ energyWindowSec + " s )");

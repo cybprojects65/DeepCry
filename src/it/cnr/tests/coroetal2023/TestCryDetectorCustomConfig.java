@@ -1,11 +1,11 @@
-package it.cnr.tests;
+package it.cnr.tests.coroetal2023;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cnr.workflow.Configuration;
-import it.cnr.workflow.CryDetector;
+import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.coroetal2023.CryDetectorCoroetAl2023;
 
 public class TestCryDetectorCustomConfig {
 
@@ -23,7 +23,7 @@ public class TestCryDetectorCustomConfig {
 		config.minibatch=150;
 		config.nEpochs=2;
 		
-		CryDetector cryd = new CryDetector(config);
+		CryDetectorCoroetAl2023 cryd = new CryDetectorCoroetAl2023(config);
 		List<File> outputAnnotations = cryd.detect(audio);
 		cryd.eval(audio);
 		

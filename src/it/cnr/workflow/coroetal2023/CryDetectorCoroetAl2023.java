@@ -1,4 +1,4 @@
-package it.cnr.workflow;
+package it.cnr.workflow.coroetal2023;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,8 +14,9 @@ import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
 import it.cnr.features.Utils;
 import it.cnr.speech.audiofeatures.AudioBits;
+import it.cnr.workflow.configuration.Configuration;
 
-public class CryDetector {
+public class CryDetectorCoroetAl2023 {
 
 	public MultiKMeans clusterer = new MultiKMeans();
 	public DeepLearningManager dlo = new DeepLearningManager();
@@ -26,14 +27,14 @@ public class CryDetector {
 	
 	public double maxCryAnnotationPerc = 0.98;
 
-	public CryDetector() {
+	public CryDetectorCoroetAl2023() {
 		this.config = new Configuration();
 		System.out.println("Current configuration:\n" + config.toString());
 	}
 
 	public Configuration config;
 
-	public CryDetector(Configuration config) {
+	public CryDetectorCoroetAl2023(Configuration config) {
 		this.config = config.clone();
 		System.out.println("Current configuration:\n" + config.toString());
 	}

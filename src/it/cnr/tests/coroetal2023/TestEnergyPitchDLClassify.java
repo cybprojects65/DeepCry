@@ -1,14 +1,13 @@
-package it.cnr.tests;
+package it.cnr.tests.coroetal2023;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
 
 import it.cnr.clustering.MultiKMeans;
 import it.cnr.deeplearning.DeepLearningManager;
+import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
 
-public class TestEnergyPitchDLTraining {
+public class TestEnergyPitchDLClassify {
 
 	public static void main(String[] args) throws Exception{
 
@@ -28,20 +27,19 @@ public class TestEnergyPitchDLTraining {
 		
 		FeatureExtractor extractor = new FeatureExtractor();
 		double[][] featureMatrix = extractor.chunkizeTimeSeries(fold, energyWindow4Analysis, pitchWindow4Analysis, featurewindowsize,featurewindowshift);
-		
 		DeepLearningManager dlo = new DeepLearningManager();
 		int optimalCluster = dlo.calcMaxLikelyhoodClusterHMM(clusterer.clusters, energyWindow4Analysis, pitchWindow4Analysis, featurewindowsize, featurewindowshift, minNFeaturesInCluster, clusterer.Kstar);
 		
-		//dlo.buildTrainingSet(clusterer.clusters,optimalCluster);
-		dlo.trainLSTM(clusterer.clusters, optimalCluster,
-				nhidden,
-				nClasses,
-				minibatch,
-				nEpochs);
+		File modelFolder = new File("tempb6889ec4-55cc-4fa6-a35f-1563fda89558");
+		int classifications[] = dlo.annotate(featureMatrix, modelFolder, nhidden,	nClasses,	minibatch,	nEpochs);
 		
-		System.out.println("Training accuracy : "+dlo.trainingAccuracy);
+		File LSTMClusteringFileLab = new File(fold, "LSTM.lab");
 		
-		//OK - train an LSTM
+		CorpusCleaner.annotationVector2Lab(classifications,LSTMClusteringFileLab, featurewindowsize,featurewindowshift,0);
+		
+		
+		//OK - annotate file through the LSTM
+		//ADDITIONAL: ADD spectral features
 		
 	}
 		

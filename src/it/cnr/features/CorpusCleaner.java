@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.speech.audiofeatures.AudioBits;
+import it.cnr.speech.audiofeatures.AudioWaveGenerator;
 import it.cnr.speech.utils.Utils;
+import marytts.util.io.FileUtils;
 
 public class CorpusCleaner {
 
@@ -32,8 +34,13 @@ public class CorpusCleaner {
 				System.out.println("Deleting audio " + audioFile.getName() + " Length " + audioseconds + "s < "
 						+ minimumLenghtinSec + "s");
 				audioFile.setLastModified(0);
+				FileUtils.rename(audioFile.getAbsolutePath(), new File(audioFile.getAbsolutePath().replace(".wav", "_deleted.wav")).getAbsolutePath() );
+				
 				// FileUtils.forceDelete(audioFile);
 
+			}else {
+				System.out.println("Good audio " + audioFile.getName() + " Length " + audioseconds + "s > "
+						+ minimumLenghtinSec + "s");
 			}
 
 		}
@@ -42,6 +49,61 @@ public class CorpusCleaner {
 
 	}
 
+	public static File unifyToneUnitsIntoOneFile(File audioFolder, File audio) throws Exception {
+
+		File[] allFiles = audioFolder.listFiles();
+		System.out.println("Unifying tone units into one audio file");
+		int totalSamples = 0;
+		List<short[]> allGoodSignals = new ArrayList<>(); 
+		for (File audioFile : allFiles) {
+			if (audioFile.getName().endsWith("_deleted.wav"))
+				continue;
+
+			AudioBits bits = new AudioBits(audioFile);
+			short [] signal = bits.getShortVectorAudio();
+			bits.ais.close();
+			totalSamples = totalSamples+signal.length;
+			allGoodSignals.add(signal);
+		}
+		short[] unifiedSignal = new short[totalSamples];
+		
+		int idx = 0;
+		for (int i = 0;i<allGoodSignals.size();i++) {
+				
+			short[] singlesignal = allGoodSignals.get(i);
+			for (int j=0;j<singlesignal.length;j++) {
+				unifiedSignal[idx] = singlesignal[j];
+				idx = idx+1;
+			}
+		}
+		
+		File singleFile = new File(audioFolder,audio.getName().replace(".wav", "_shortened.wav"));
+		
+		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(unifiedSignal, singleFile, new AudioBits(audio).getAudioFormat());
+		
+		System.out.println("Audio unified to "+singleFile.getAbsolutePath()+" - Done");
+		
+		return(singleFile);
+	}
+	
+	public static void vector2LabFile(String [] annotations, double [] times, File labfile) throws Exception {
+
+		BufferedWriter bw = new BufferedWriter(new FileWriter(labfile));
+
+		int i = 0;
+		for (String annotation: annotations) {
+			double time0 = times[i];
+			double time1 =  times[times.length-1];
+			if (i<(times.length-1))
+				time1 = times[i+1];
+			String labLine = time0 + " " + time1 + " " + annotation;
+			bw.write(labLine + "\n");
+			i++;
+		}
+
+		bw.close();
+	}
+	
 	public static void rawFormat2Lab(File rawfile, File labfile, double timeStep) throws Exception {
 
 		String rawLine = new String(Files.readAllBytes(rawfile.toPath()));

@@ -1,8 +1,8 @@
-package it.cnr.tests;
+package it.cnr.tests.coroetal2023;
 
 import java.io.File;
 
-import it.cnr.workflow.CryDetectorSearcher;
+import it.cnr.workflow.coroetal2023.CryDetectorOptimiserCoroetAl2023;
 
 public class TestCryDetectorSearcher {
 
@@ -19,7 +19,7 @@ public class TestCryDetectorSearcher {
 		//File audio = new File("C:\\Users\\Utente\\Ricerca\\Experiments\\NINA Infant Cry\\NIDO\\NIDO1\\NIDO1.wav");
 		//File audio = new File("C:\\Users\\Utente\\Ricerca\\Experiments\\NINA Infant Cry\\NIDO\\NIDO2\\NIDO2.wav");
 		//File audio = new File("C:\\Users\\Utente\\Ricerca\\Experiments\\NINA Infant Cry\\NIDO\\NIDO3\\NIDO3.wav");
-		CryDetectorSearcher cryd = new CryDetectorSearcher();
+		CryDetectorOptimiserCoroetAl2023 cryd = new CryDetectorOptimiserCoroetAl2023();
 		cryd.findOptimalConfiguration(audio);
 		
 	

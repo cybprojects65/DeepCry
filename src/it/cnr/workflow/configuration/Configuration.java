@@ -1,4 +1,4 @@
-package it.cnr.workflow;
+package it.cnr.workflow.configuration;
 
 public class Configuration {
 
@@ -17,13 +17,15 @@ public class Configuration {
 	public int nEpochs = 2;
 	public int nHMMStates = 2;
 	
+	public boolean standardiseFeatures = true;
+	
 	public Configuration() {
 		
 	}
 	
 	public Configuration(float maxSilence, float minimumAudioLength, float energyWindow4Analysis,
 			float pitchWindow4Analysis, float featurewindowsize, float featurewindowshift, int minNFeaturesInCluster,
-			int nClasses, int nhidden, int minibatch, int nEpochs) {
+			int nClasses, int nhidden, int minibatch, int nEpochs, boolean standardiseFeatures) {
 
 		
 		this.maxSilence= maxSilence;
@@ -37,6 +39,7 @@ public class Configuration {
 		this.nhidden=nhidden;
 		this.minibatch=minibatch;
 		this.nEpochs=nEpochs;
+		this.standardiseFeatures=standardiseFeatures;
 		
 	}
 	
@@ -57,8 +60,8 @@ public class Configuration {
 				"nClasses="+nClasses+"\n"+
 				"nhidden="+nhidden+"\n"+
 				"minibatch="+minibatch+"\n"+
-				"nEpochs="+nEpochs;
-		
+				"nEpochs="+nEpochs+"\n"+
+				"standardiseFeatures="+standardiseFeatures;
 		return report;
 		
 	}
@@ -67,7 +70,7 @@ public class Configuration {
 		
 		return new Configuration( maxSilence, minimumAudioLength, energyWindow4Analysis,
 				pitchWindow4Analysis, featurewindowsize, featurewindowshift, minNFeaturesInCluster,
-				nClasses, nhidden, minibatch, nEpochs);
+				nClasses, nhidden, minibatch, nEpochs,standardiseFeatures);
 		
 	}
 
