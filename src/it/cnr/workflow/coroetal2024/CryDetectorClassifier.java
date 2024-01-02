@@ -37,22 +37,32 @@ public class CryDetectorClassifier {
 	public List<File> extractedWaveFiles = null;
 	public List<File> annotationFiles = null;
 	public double SNR = 0;
-	public int maxTryPerCluster = 5;
-	public double thresholdReduceFactor = 0.3;
-	public double minimumMSdetection = 0.5; // seconds
-	public double maxCryAnnotationPerc = 0.98;
+	public File outputFolder;
+	public Configuration config;
 	
-	int nClassesClassification = 19;
-	double entropyThr = 252; //= 2.52 nats 
-	public double minimumMSdetectionClassification = 0.3;
-	File outputFolder;
-
+	//################ START OF PARAMETER SECTION ################
+	
+	//################CRY DETECTION PARAMETERS
+	public int maxTriesToFindValidIslandsAndClusters = 5;
+	public double reductionFactor4Retry = 0.3;
+	public double minimumMSContinuosWindowDetection = 0.5; // seconds
+	public int nClassesDetection = 10;
+	public int numberOfMSFeatures4Detection = 15;
+	
+	//################CRY CLASSIFICATION PARAMETERS
+	public int nClassesClassification = 35;
+	public double entropyEnergyThr = 26;
+	public double minimumMSContinuosWindowClassification = 0.3; //seconds
+	public int numberOfMSFeatures4Classification = 8;
+	public double maxFrequencyForClassification = 3000;
+	
+	//################ END OF PARAMETER SECTION ################
+	
+	
 	public CryDetectorClassifier() {
 		this.config = new Configuration();
 		System.out.println("Current configuration:\n" + config.toString());
 	}
-
-	public Configuration config;
 
 	public CryDetectorClassifier(Configuration config) {
 		this.config = config.clone();
@@ -77,18 +87,18 @@ public class CryDetectorClassifier {
 		ClusteringManager clustering = null;
 		System.out.println("#CLUSTERING - START#");
 		double[] thresholds = Utils.initializeVector(featureMatrix[0].length, 1);
-		for (int tryn = 1; tryn <= maxTryPerCluster; tryn++) {
+		for (int tryn = 1; tryn <= maxTriesToFindValidIslandsAndClusters; tryn++) {
 			clustering = new ClusteringManager(config, toneUnitCleanedFile);
-			clustering.clusterFeatures(featureMatrix, toneUnitCleanedFile.getParentFile(), 1, 10, thresholds);
+			clustering.clusterFeatures(featureMatrix, toneUnitCleanedFile.getParentFile(), 1, nClassesDetection, thresholds);
 
-			if (!clustering.highriskclusterfound && tryn == maxTryPerCluster) {
+			if (!clustering.highriskclusterfound && tryn == maxTriesToFindValidIslandsAndClusters) {
 				System.out.println("A HIGH-VALUED CLUSTER WAS NOT FOUND - INFANT CRY POSSIBLY ABSENT!");
 				return(null);
 			} else if (!clustering.highriskclusterfound) {
 				System.out.println(
 						"A HIGH-VALUED CLUSTER WAS NOT FOUND - INFANT CRY POSSIBLY ABSENT - RETRYING WITH THRESHOLDS REDUCED - RETRY N. "
 								+ tryn);
-				thresholds = Utils.reduceVectorValues(thresholds, thresholdReduceFactor);
+				thresholds = Utils.reduceVectorValues(thresholds, reductionFactor4Retry);
 				System.out.println("New thresholds: " + Arrays.toString(thresholds));
 			} else {
 				System.out.println("A HIGH-VALUED CLUSTER WAS FOUND");
@@ -108,8 +118,10 @@ public class CryDetectorClassifier {
 		ModulationSpectrogram ms = new ModulationSpectrogram();
 		boolean saturateMagnitudeDBs = true;
 		boolean addDeltas = true;
+		
+		double maxMSfrequency = new AudioBits(islandAudio).getAudioFormat().getSampleRate()/2d;
 		try {
-			ms.calcMS(islandAudio, ms_output, saturateMagnitudeDBs, addDeltas);
+			ms.calcMS(islandAudio, ms_output, saturateMagnitudeDBs, addDeltas, numberOfMSFeatures4Detection, maxMSfrequency);
 		}catch(Exception e) {
 			System.out.println("IMPOSSIBLE TO TRACE MODULATION SPECTROGRAM - POSSIBLY BECAUSE CAPTURED AUDIO IS TOO SHORT");
 			e.printStackTrace();
@@ -132,8 +144,8 @@ public class CryDetectorClassifier {
 		System.out.println("#MODULATION SPECTROGRAM - END#");
 
 		System.out.println("#RE-CLUSTERING - START#");
-		double[][] mod_spec_features_nodelta = Utils.subsetRows(mod_spec_features, GreenwoodFilterBank.numMelFiltersToTake,
-				(GreenwoodFilterBank.numMelFiltersToTake * 2 - 1)); // mod spec without deltas
+		double[][] mod_spec_features_nodelta = Utils.subsetRows(mod_spec_features, numberOfMSFeatures4Detection,
+				(numberOfMSFeatures4Detection * 2 - 1)); // mod spec without deltas
 		Configuration tempConfig = config.clone();
 		System.out.println("\tTransposing matrix for clustering");
 		//N VECTORS x N FEATURES 
@@ -143,9 +155,9 @@ public class CryDetectorClassifier {
 
 		tempConfig.standardiseFeatures = false;
 		ClusteringManager clusteringMS = null;
-		for (int tryn = 1; tryn <= maxTryPerCluster; tryn++) {
+		for (int tryn = 1; tryn <= maxTriesToFindValidIslandsAndClusters; tryn++) {
 			clusteringMS = new ClusteringManager(tempConfig, islandAudio);
-			clusteringMS.clusterFeatures(mod_spec_features_nodelta_tr, islandAudio.getParentFile(), 10, 10, q3);
+			clusteringMS.clusterFeatures(mod_spec_features_nodelta_tr, islandAudio.getParentFile(), nClassesDetection, nClassesDetection, q3);
 			File labFile = new File(islandAudio.getAbsolutePath().replace(".wav", "modspeclust.lab"));
 			AudioBits b = new AudioBits(islandAudio);
 			short[] signal = b.getShortVectorAudio();
@@ -153,16 +165,16 @@ public class CryDetectorClassifier {
 			int samplingFreqMS = (int) (b.getAudioFormat().getSampleRate() / ModulationSpectrogram.reductionFactor);
 			double windowShiftMS = ModulationSpectrogram.windowShift;
 			b.ais.close();
-			clusteringMS.toLabCTC(labFile, samplingFreqMS, signalLengthMS, windowShiftMS, minimumMSdetection);
+			clusteringMS.toLabCTC(labFile, samplingFreqMS, signalLengthMS, windowShiftMS, minimumMSContinuosWindowDetection);
 
-			if (!clusteringMS.highriskclusterfound && tryn == maxTryPerCluster) {
+			if (!clusteringMS.highriskclusterfound && tryn == maxTriesToFindValidIslandsAndClusters) {
 				System.out.println("A HIGH-VALUED CLUSTER WAS NOT FOUND - INFANT CRY POSSIBLY ABSENT!");
 				return(null);
 			} else if (!clusteringMS.highriskclusterfound) {
 				System.out.println(
 						"A HIGH-VALUED CLUSTER WAS NOT FOUND - INFANT CRY POSSIBLY ABSENT - RETRYING WITH THRESHOLDS REDUCED - RETRY N. "
 								+ tryn);
-				q3 = Utils.reduceVectorValues(q3, thresholdReduceFactor);
+				q3 = Utils.reduceVectorValues(q3, reductionFactor4Retry);
 				System.out.println("New thresholds: " + Arrays.toString(q3));
 			} else {
 				System.out.println("A HIGH-VALUED CLUSTER WAS FOUND");
@@ -171,7 +183,7 @@ public class CryDetectorClassifier {
 		}
 		System.out.println("Extracting annotated audio segments");
 		File mod_spec_audio = new File(islandAudio.getAbsolutePath().replace(".wav", "_highmodspec.wav"));
-		saveNonEmptyAnnotatedSignal(mod_spec_audio, islandAudio, clustering.times, clustering.labels);
+		saveNonEmptyAnnotatedSignal(mod_spec_audio, islandAudio, clusteringMS.times, clusteringMS.labels);
 		System.out.println("Modulation Spectrogram islands saved to " + mod_spec_audio.getAbsolutePath());
 		List<double[]> crySegments = SignalConverter.getAnnotatedSignalSegments(islandAudio, clusteringMS.times,clusteringMS.labels); 
 		File mod_spec_segments = new File(islandAudio.getAbsolutePath().replace(".wav", "_highmodspec.bin"));
@@ -180,27 +192,24 @@ public class CryDetectorClassifier {
 		System.out.println("#RE-CLUSTERING - END#");		
 		
 		//TODO: enhance found segments (recall) through LSTM training
+		//train on the mod_spec_audio
+		//test on the islandAudio
+		//record the cry-annotated audio in a new file
 		return mod_spec_audio;
 
 	}
 
 	public static void saveNonEmptyAnnotatedSignal(File outputAudiofile, File inputAudioReference, double [] times, String [] labels) throws Exception{
-	//short[] reducedsignalMS = SignalConverter.extractAnnotatedSignal(inputAudioReference, clusteringMS.times,
-		//	clusteringMS.labels);
 		short[] reducedsignalMS = SignalConverter.extractAnnotatedSignal(inputAudioReference, times,labels);
 		System.out.println("Saving annotated audio segments");
-		//File mod_spec_audio = new File(islandAudio.getAbsolutePath().replace(".wav", "_highmodspec.wav"));
 		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(reducedsignalMS, outputAudiofile,
 			new AudioBits(inputAudioReference).getAudioFormat());
-		
 	}
 	
 	public static void saveObject(File outputFile, Object o) throws Exception {
-
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outputFile));
 		oos.writeObject(o);
 		oos.close();
-		
 	}
 
 	public static Object loadObject(File inputFile) throws Exception {
@@ -257,13 +266,12 @@ public class CryDetectorClassifier {
 
 	public void classify(File audioFiles []) throws Exception {
 		
-		HashMap<String, double [][]> msMatrixList = new HashMap<String, double [][]>();
-		
 		File mainAudioFolder = audioFiles[0].getParentFile();
 		File unifiedAudioFile = new File (mainAudioFolder,"unifiedMS.wav");
 		int totalSamples = 0;
 		System.out.println("Unifying file to "+unifiedAudioFile.getAbsolutePath());
 		List<short[]> signals = new ArrayList<>();
+		AudioFormat af = null; 
  		for (File audio:audioFiles) {
  			File audioFolder = new File(audio.getAbsolutePath().replace(".wav", "_processing"));
 			File [] allfolderfiles = audioFolder.listFiles();
@@ -278,6 +286,9 @@ public class CryDetectorClassifier {
 				continue;
 			
 			AudioBits ab = new AudioBits(modspecfile);
+			if (af == null) {
+				af = new AudioBits(modspecfile).getAudioFormat();
+			}
 			short[] sig = ab.getShortVectorAudio();
 			ab.ais.close();
 			totalSamples+=sig.length;
@@ -292,7 +303,7 @@ public class CryDetectorClassifier {
 				sam++;
 			}
 		}
-		AudioFormat af = new AudioBits(unifiedAudioFile).getAudioFormat();
+		
 		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(totalFile, unifiedAudioFile, af);
  		System.out.println("Unifying file to "+unifiedAudioFile.getAbsolutePath()+" done");
  		File ms_output = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", "_mod_spect_forClassification.csv"));
@@ -300,7 +311,7 @@ public class CryDetectorClassifier {
 		ModulationSpectrogram ms = new ModulationSpectrogram();
 		boolean saturateMagnitudeDBs = true;
 		boolean addDeltas = false;
-		ms.calcMS(unifiedAudioFile, ms_output, saturateMagnitudeDBs, addDeltas);
+		ms.calcMS(unifiedAudioFile, ms_output, saturateMagnitudeDBs, addDeltas, numberOfMSFeatures4Classification, maxFrequencyForClassification);
 		System.out.println("#MODULATION SPECTROGRAM - END FOR FILE "+unifiedAudioFile.getAbsolutePath());
 
 		System.out.println("#RUNNING CLASSIFICATION");
@@ -308,13 +319,13 @@ public class CryDetectorClassifier {
 		ClassificationManager classifierMS = new ClassificationManager(config,unifiedAudioFile);
 		File labFile = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", ".lab"));
 		//classification clustering 
-		classifierMS.clusterFeatures(msOverallMatrix, mainAudioFolder , nClassesClassification, nClassesClassification, entropyThr);
+		classifierMS.clusterFeatures(msOverallMatrix, mainAudioFolder, nClassesClassification, nClassesClassification, entropyEnergyThr);
 		
 		int signalLengthMS = totalSamples / ModulationSpectrogram.reductionFactor;
 		int samplingFreqMS = (int) (af.getSampleRate() / ModulationSpectrogram.reductionFactor);
 		double windowShiftMS = ModulationSpectrogram.windowShift;
 		
-		classifierMS.toLabCTC(labFile, samplingFreqMS, signalLengthMS, windowShiftMS,minimumMSdetectionClassification);
+		classifierMS.toLabCTC(labFile, samplingFreqMS, signalLengthMS, windowShiftMS, minimumMSContinuosWindowClassification);
 		
 		File mod_spec_audio = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", "_anomalouscry.wav"));
 		saveNonEmptyAnnotatedSignal(mod_spec_audio, unifiedAudioFile, classifierMS.times, classifierMS.labels);

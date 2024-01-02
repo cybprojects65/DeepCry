@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
 
-import it.cnr.features.Utils;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
 
@@ -22,16 +21,7 @@ public class ModulationSpectrogram {
 	public static double maxdB = 30;
 	public static double mindB = -30;
 	
-	public static void main(String[] args) throws Exception {
-		File audio = new File("./test_wave_files/Subintensive-annoyed-1child#2-23_04_shortened_islands.wav");
-		File output = new File("./test_wave_files/Subintensive-annoyed-1child#2-23_04_shortened_islands.csv");
-		ModulationSpectrogram ms = new ModulationSpectrogram();
-		boolean saturateMagnitudeDBs = true;
-		boolean addDeltas = true;
-		ms.calcMS(audio, output,saturateMagnitudeDBs,addDeltas);
-	}
-
-	public void calcMS(File audio, File output, boolean saturate, boolean addDeltas) throws Exception {
+	public void calcMS(File audio, File output, boolean saturate, boolean addDeltas, int numberOfMSFeatures, double maxFrequency) throws Exception {
 
 		SignalConverter sc = new SignalConverter();
 		sc.getSignal(audio);
@@ -47,8 +37,8 @@ public class ModulationSpectrogram {
 		 * 
 		 * System.exit(0);
 		 */
-
-		for (int k = 0; k < GreenwoodFilterBank.numMelFiltersToTake; k++) {
+		
+		for (int k = 0; k < numberOfMSFeatures; k++) {
 			int melFilterCounter = k;
 			// I will use the original Greenwood filterbank from "Critical bandwidth and the
 			// frequency coordinates of the basilar membrane." simulated as Mel triangular
@@ -56,7 +46,7 @@ public class ModulationSpectrogram {
 			// using 15 Mel filters
 			System.out.println("#RUNNING Mel filter n. " + melFilterCounter);
 
-			GreenwoodFilterBank mel = new GreenwoodFilterBank(melFilterCounter, sc.samplingRate, 0.01);
+			GreenwoodFilterBank mel = new GreenwoodFilterBank(melFilterCounter, sc.samplingRate, 0.01,numberOfMSFeatures,maxFrequency);
 			double[] mel_signal = mel.applyFilter(sc.signal);
 			File stepCheckFile = null;
 
@@ -150,9 +140,9 @@ public class ModulationSpectrogram {
 			System.out.println("Cut-off spectrum OK");
 
 			if (modulationSpectrogram == null)
-				modulationSpectrogram = new double[GreenwoodFilterBank.numMelFiltersToTake][spectrogram_4hz_slice.length];
+				modulationSpectrogram = new double[numberOfMSFeatures][spectrogram_4hz_slice.length];
 
-			modulationSpectrogram[GreenwoodFilterBank.numMelFiltersToTake-k-1] = spectrogram_4hz_slice;
+			modulationSpectrogram[numberOfMSFeatures-k-1] = spectrogram_4hz_slice;
 
 			
 		}

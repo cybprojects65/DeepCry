@@ -11,7 +11,6 @@ import java.util.Arrays;
 public class LowPassFilterDynamic {
 	
 	protected final static double lowerFilterFreq = 200; //minimum Greenwood frequency = lowest audible frequency
-	protected final static int numMelFilters = 23;
 	
 	double freq; double samplingRate; int windowSize;  int cbin; 
 	

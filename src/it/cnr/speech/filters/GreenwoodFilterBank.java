@@ -5,14 +5,15 @@ import org.apache.commons.math3.complex.Complex;
 public class GreenwoodFilterBank extends LowPassFilterDynamic{
 	
 	public final static double lowerFilterFreq = 165.4;//200; //minimum Greenwood filterbank frequency
-	public final static int numMelFilters = 17; //at 13 this will be under 4000 to simulate Greenwood frequencies
-	public final static int numMelFiltersToTake = 13;
-	
+	public int numMelFilters = 15;//17; //at 13 this will be under 4000 to simulate Greenwood frequencies
 	int melFreqIndex;
+	double highestFrequency;
 	
-	public GreenwoodFilterBank(int melFreqIndex, double samplingRate, double windowSizeSec) {
+	public GreenwoodFilterBank(int melFreqIndex, double samplingRate, double windowSizeSec, int numFilters, double highestFrequency) {
 		super(0, samplingRate, windowSizeSec);
+		this.numMelFilters = numFilters;
 		this.melFreqIndex = melFreqIndex;
+		this.highestFrequency = highestFrequency;
 	}
 	    
     protected static double log10(double value){
@@ -27,22 +28,39 @@ public class GreenwoodFilterBank extends LowPassFilterDynamic{
         
     }
 
+    protected static double freqToGF(double freq){
+        return 165.4 * (1 + (freq / 634.5));
+        
+    }
+    
+    private static double inverseGF(double gf){
+        return 634.5* ( (gf/165.4)-1);
+    }
+    
     public static double greenwoodFunction(double frequency, double a, double fMin) {
         return a * Math.log10(1 + frequency / fMin);
     }
     
-    private static double centerFreq(int i,double samplingRate){
+    private double centerFreq(int i,double samplingRate){
+    	
     	
         double mel[] = new double[2];
         mel[0] = freqToMel(lowerFilterFreq);
-        mel[1] = freqToMel(samplingRate / 2);
-        
+        //mel[1] = freqToMel(samplingRate / 2);
+        mel[1] = freqToMel(highestFrequency);
         // take inverse mel of:
         double temp = mel[0] + ((mel[1] - mel[0]) / (numMelFilters + 1)) * i;
-        
         return inverseMel(temp);
-        
     	
+    	
+    	/*
+    	double gf0 = freqToGF(lowerFilterFreq);
+    	double gf1 = freqToGF(highestFrequency);
+    	double step = (gf1-gf0)/ (numMelFilters+1);
+    	
+    	double gfreq = gf0+( (i*step)+step);
+    	return inverseGF(gfreq);
+    	*/
     	/*
     	double startFrequency = 20.0; // Start from 20 Hz
         double endFrequency = 8000.0; // End at 8000 Hz
@@ -117,16 +135,23 @@ public class GreenwoodFilterBank extends LowPassFilterDynamic{
     
     public static void main(String[] args) {
     	
+    	int numMelFilters = 8;
+    	double samplingFrequency = 16000;
+    	double maxFrequency = 3000;//8000;
     	
     	for (int i= 0; i<numMelFilters;i++){
     		
-    		GreenwoodFilterBank mfb = new GreenwoodFilterBank(i, 16000.0, 0.01);
+    		GreenwoodFilterBank mfb = new GreenwoodFilterBank(i, 16000.0, 0.01, numMelFilters, maxFrequency);
     		int cbin = mfb.calcCbin(i);
+    		double fcu = mfb.centerFreq(i, 16000);
     		
     		int cbinprev = mfb.calcCbin(i-1);
+    		double fpr = mfb.centerFreq(i-1, 16000);
     		int cbinpost = mfb.calcCbin(i+1);
-    		System.out.println("MF N.: "+i+" -> ["+cbinprev+" ; "+cbin+" ; "+cbinpost+"]");
-    		System.out.println("Freq: "+centerFreq(i,16000));
+    		double fpo = mfb.centerFreq(i+1, 16000);
+    		
+    		System.out.println("MF N.: "+i+" ("+fpr+" ; "+fcu+" ; "+fpo+")"+" -> ["+cbinprev+" ; "+cbin+" ; "+cbinpost+"]");
+    		System.out.println("Freq: "+mfb.centerFreq(i,16000));
     	}
     }
     

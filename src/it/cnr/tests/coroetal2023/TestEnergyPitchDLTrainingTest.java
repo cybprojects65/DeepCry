@@ -32,13 +32,7 @@ public class TestEnergyPitchDLTrainingTest {
 		int minibatch = 90;
 		int nEpochs = 10;
 		*/
-		//TODO: 
-		//0 - add reference to training set - KO
-		//1 - produce complete workflow
-		//2 - annotate audio 3 too
-		//3 - evaluate performance wrt my annotations
-		//3 - reduce feature windowsize to 0.3 OK - worse
-		
+
 		File outputClusteringFile = new File("temp_clustering.bin");
 		MultiKMeans clusterer = MultiKMeans.load(outputClusteringFile);
 		

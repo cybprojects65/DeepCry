@@ -37,26 +37,35 @@ public class SignalConverter {
 
         // Calculate entropy
         double entropy = 0.0;
+        int i=0;
         for (double probability : probabilities) {
             if (probability > 0.0) {
                 entropy -= probability * Math.log(probability);
+            	//double invdB = Math.pow(10, frequencies[i]/10d); 
+            	//entropy += invdB;
             }
+            i++;
         }
 
         return entropy;
     }
 	
 	 public static double[] normalizeSpectrum(double[] frequencies) {
+		 
+		 	//double min = Utils.getMin(frequencies);
 	        // Calculate the sum of frequencies
 	        double sum = 0.0;
 	        for (double frequency : frequencies) {
-	            sum += frequency;
+	        	double invdB = Math.pow(10, frequency/10d); 
+	            //sum += frequency;//frequency+min+1;
+	        	sum += invdB;
 	        }
 
 	        // Normalize frequencies to obtain probabilities
 	        double[] probabilities = new double[frequencies.length];
 	        for (int i = 0; i < frequencies.length; i++) {
-	            probabilities[i] = frequencies[i] / sum;
+	        	double invdB = Math.pow(10, frequencies[i]/10d);
+	            probabilities[i] = invdB / sum;//frequencies[i] / sum;//Math.abs(frequencies[i]) / sum;
 	        }
 
 	        return probabilities;

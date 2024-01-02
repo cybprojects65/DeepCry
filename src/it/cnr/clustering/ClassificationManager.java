@@ -56,13 +56,21 @@ public class ClassificationManager extends ClusteringManager{
 			Cluster c = clusteredFeatures.get(id);
 			System.out.println("Cluster "+id+" abundance: "+c.nElements) ;
 			double [] centroid = c.calcCentroid();
-			double entropy = (int) (SignalConverter.calculateSpectralEntropy(centroid)*100d);
-			String entropyInterpretation = " ";
-			if (entropy < entropyThreshold)
-				entropyInterpretation = "Anomalous";
+			double entropy = Utils.roundDecimal(SignalConverter.calculateSpectralEntropy(centroid),2);
+			double energy = Utils.roundDecimal(Utils.mean(centroid),2);
+			double indicator =Utils.roundDecimal(energy*entropy,2);
+			//String entropyInterpretation = ""+entropy;
+			//
+			String centroidIndicator = indicator+" ["+entropy+"/"+energy+"]"+" ("+id+")";
 			
-			//String centroidInterpretation = entropyInterpretation+" ("+id+")";
+			System.out.println("Cluster "+id+" indicator: "+centroidIndicator) ;
+			String entropyInterpretation = " ";
+			if (indicator >0 && indicator < entropyThreshold) {
+			//if (energy < 17)
+				entropyInterpretation = "Anomalous "+"("+id+")";
+			}
 			String centroidInterpretation = entropyInterpretation;
+			
 			centroid_interpretations.put(id, centroidInterpretation);
 			centroids.put(id, centroid);
 			System.out.println("Centroid with ID "+id+": interpreted as "+centroidInterpretation);
