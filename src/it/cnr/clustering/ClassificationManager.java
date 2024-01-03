@@ -17,7 +17,7 @@ public class ClassificationManager extends ClusteringManager{
 		super(config, audio);
 	}
 	
-	public void clusterFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold) throws Exception{
+	public void clusterFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold, double lowestEntropyThreshold) throws Exception{
 		System.out.println("Starting multi-k-means clustering");
 		MultiKMeans clusterer = new MultiKMeans();
 		File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,minClusters,maxClusters);
@@ -65,10 +65,13 @@ public class ClassificationManager extends ClusteringManager{
 			
 			System.out.println("Cluster "+id+" indicator: "+centroidIndicator) ;
 			String entropyInterpretation = " ";
-			if (indicator >0 && indicator < entropyThreshold) {
+			if (indicator >lowestEntropyThreshold && indicator < entropyThreshold) {
 			//if (energy < 17)
 				entropyInterpretation = "Anomalous "+"("+id+")";
+			}else {
+				//entropyInterpretation = "N "+"("+id+")";
 			}
+			
 			String centroidInterpretation = entropyInterpretation;
 			
 			centroid_interpretations.put(id, centroidInterpretation);

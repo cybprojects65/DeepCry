@@ -57,7 +57,9 @@ public class TestInfantCryClassifier {
 		//total duration = 1250s = 20.8 min = 1 250 000 energy windows = 100 000 windows of ms (250 ms) extracted every 12ms 
 		
 		File allAudioToAnalyse [] = {
-				audio7,audio8,audio1,audio2,audio3,audio4,audio5,audio6,audio9,audio10
+				audio7,
+				//audio8,
+				audio1,audio2,audio3,audio4,audio5,audio6,audio9,audio10
 		};
 		
 		CryDetectorClassifier cryd = new CryDetectorClassifier(config);

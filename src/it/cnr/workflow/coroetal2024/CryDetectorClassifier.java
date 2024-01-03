@@ -50,8 +50,9 @@ public class CryDetectorClassifier {
 	public int numberOfMSFeatures4Detection = 15;
 	
 	//################CRY CLASSIFICATION PARAMETERS
-	public int nClassesClassification = 35;
+	public int nClassesClassification = 40;
 	public double entropyEnergyThr = 26;
+	public double lowestEntropyEnergyThr = 18;
 	public double minimumMSContinuosWindowClassification = 0.3; //seconds
 	public int numberOfMSFeatures4Classification = 8;
 	public double maxFrequencyForClassification = 3000;
@@ -264,7 +265,7 @@ public class CryDetectorClassifier {
 		return LSTMClusteringFileLabOutput;
 	}
 
-	public void classify(File audioFiles []) throws Exception {
+	public void classifyHighModSpecSegments(File audioFiles []) throws Exception {
 		
 		File mainAudioFolder = audioFiles[0].getParentFile();
 		File unifiedAudioFile = new File (mainAudioFolder,"unifiedMS.wav");
@@ -319,7 +320,7 @@ public class CryDetectorClassifier {
 		ClassificationManager classifierMS = new ClassificationManager(config,unifiedAudioFile);
 		File labFile = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", ".lab"));
 		//classification clustering 
-		classifierMS.clusterFeatures(msOverallMatrix, mainAudioFolder, nClassesClassification, nClassesClassification, entropyEnergyThr);
+		classifierMS.clusterFeatures(msOverallMatrix, mainAudioFolder, nClassesClassification, nClassesClassification, entropyEnergyThr, lowestEntropyEnergyThr);
 		
 		int signalLengthMS = totalSamples / ModulationSpectrogram.reductionFactor;
 		int samplingFreqMS = (int) (af.getSampleRate() / ModulationSpectrogram.reductionFactor);
@@ -334,6 +335,98 @@ public class CryDetectorClassifier {
 		System.out.println("#CLASSIFICATION FINISHED");
 	}
 	
+	
+  public void classify(File audioFiles []) throws Exception {
+		
+		File mainAudioFolder = audioFiles[0].getParentFile();
+		File unifiedAudioFile = new File (mainAudioFolder,"islands_unified.wav");
+		File msFeatureTableObject = new File (unifiedAudioFile.getAbsolutePath().replace(".wav", ".bin"));
+		double [][] msOverallMatrix = null;
+		AudioFormat af = null; 
+		int totalSamples = 0;
+		
+		if (!msFeatureTableObject.exists()) {
+		
+		
+		System.out.println("Unifying file to "+unifiedAudioFile.getAbsolutePath());
+		List<short[]> signals = new ArrayList<>();
+		
+
+ 		for (File audio:audioFiles) {
+ 			
+ 			System.out.println("#ADDING AUDIO FILE "+audio.getName());
+ 			
+ 			File audioFolder = new File(audio.getAbsolutePath().replace(".wav", "_processing"));
+			File [] allfolderfiles = audioFolder.listFiles();
+			File modspecfile = null;
+			for (File f:allfolderfiles) {
+				if (f.getName().endsWith("_islands.wav")) {
+					modspecfile = f;
+					break;
+				}
+			}
+			if (modspecfile==null)
+				continue;
+			
+			AudioBits ab = new AudioBits(modspecfile);
+			if (af == null) {
+				af = new AudioBits(modspecfile).getAudioFormat();
+			}
+			short[] sig = ab.getShortVectorAudio();
+			ab.ais.close();
+			totalSamples+=sig.length;
+			signals.add(sig);
+		}
+
+		short [] totalFile = new short[totalSamples];
+		int sam = 0;
+		for (short[] sig:signals) {
+			for (int i=0;i<sig.length;i++) {
+				totalFile[sam] = sig[i];
+				sam++;
+			}
+		}
+		
+		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(totalFile, unifiedAudioFile, af);
+ 		System.out.println("Unifying file to "+unifiedAudioFile.getAbsolutePath()+" done");
+ 		File ms_output = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", "_mod_spect_forClassification.csv"));
+ 		System.out.println("#MODULATION SPECTROGRAM - START FOR FILE "+unifiedAudioFile.getAbsolutePath());
+		ModulationSpectrogram ms = new ModulationSpectrogram();
+		boolean saturateMagnitudeDBs = true;
+		boolean addDeltas = false;
+		ms.calcMS(unifiedAudioFile, ms_output, saturateMagnitudeDBs, addDeltas, numberOfMSFeatures4Classification, maxFrequencyForClassification);
+		System.out.println("#MODULATION SPECTROGRAM - END FOR FILE "+unifiedAudioFile.getAbsolutePath());
+		msOverallMatrix = Utils.traspose(ms.modulationSpectrogram);
+			saveObject(msFeatureTableObject, msOverallMatrix);
+		}else {
+			msOverallMatrix = (double [][]) loadObject(msFeatureTableObject);
+			AudioBits ab = new AudioBits(unifiedAudioFile);
+			af = ab.getAudioFormat();
+			short[] sig = ab.getShortVectorAudio();
+			ab.ais.close();
+			totalSamples=sig.length;
+		}
+		
+		System.out.println("#RUNNING CLASSIFICATION");
+		
+		ClassificationManager classifierMS = new ClassificationManager(config,unifiedAudioFile);
+		File labFile = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", ".lab"));
+		//classification clustering 
+		classifierMS.clusterFeatures(msOverallMatrix, mainAudioFolder, nClassesClassification, nClassesClassification, entropyEnergyThr, lowestEntropyEnergyThr);
+		
+		int signalLengthMS = totalSamples / ModulationSpectrogram.reductionFactor;
+		int samplingFreqMS = (int) (af.getSampleRate() / ModulationSpectrogram.reductionFactor);
+		double windowShiftMS = ModulationSpectrogram.windowShift;
+		
+		classifierMS.toLabCTC(labFile, samplingFreqMS, signalLengthMS, windowShiftMS, minimumMSContinuosWindowClassification);
+		
+		File mod_spec_audio = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", "_anomalouscry.wav"));
+		saveNonEmptyAnnotatedSignal(mod_spec_audio, unifiedAudioFile, classifierMS.times, classifierMS.labels);
+		
+		
+		System.out.println("#CLASSIFICATION FINISHED");
+	}
+
 	public static void main(String[] args) throws Exception {
 
 		Configuration config = new Configuration();
@@ -384,7 +477,9 @@ public class CryDetectorClassifier {
 		//total duration = 1250s = 20.8 min = 1 250 000 energy windows = 100 000 windows of ms (250 ms) extracted every 12ms 
 		
 		File allAudioToAnalyse [] = {
-				audio7,audio8,audio1,audio2,audio3,audio4,audio5,audio6,audio9,audio10
+				audio7,
+				//audio8,
+				audio1,audio2,audio3,audio4,audio5,audio6,audio9,audio10
 				//audio1,audio2,audio3,audio4,audio5,audio6,audio7,audio8,audio9,audio10
 		};
 		
