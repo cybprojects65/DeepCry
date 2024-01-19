@@ -9,6 +9,7 @@ import javax.sound.sampled.AudioFormat;
 
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
+import it.cnr.workflow.utilities.SignalProcessing;
 
 public class ModulationSpectrogram {
 
@@ -21,9 +22,25 @@ public class ModulationSpectrogram {
 	public static double maxdB = 30;
 	public static double mindB = -30;
 	
+	public static int getMSIndex (double time, double modSpecWindowSec) {
+		double t = 0;
+		int idx = 0;
+		while (t<time) {
+			t+=modSpecWindowSec;
+			idx++;
+		}
+		
+		return idx;
+		
+	}
+	
+	public static double getMSTime (int index, double modSpecWindowShiftSec) {
+		return ((double)index)*modSpecWindowShiftSec;
+	}
+	
 	public void calcMS(File audio, File output, boolean saturate, boolean addDeltas, int numberOfMSFeatures, double maxFrequency) throws Exception {
 
-		SignalConverter sc = new SignalConverter();
+		SignalProcessing sc = new SignalProcessing();
 		sc.getSignal(audio);
 
 		/*
@@ -89,7 +106,7 @@ public class ModulationSpectrogram {
 			System.out.println("Downsampling OK");
 
 			System.out.println("Normalising");
-			double[] lowpassed_subsampled_normalised_signal = SignalConverter
+			double[] lowpassed_subsampled_normalised_signal = SignalProcessing
 					.normaliseByAverageEnvelopeLevel(lowpassed_subsampled_signal);
 
 			if (saveSteps) {
@@ -100,7 +117,7 @@ public class ModulationSpectrogram {
 			System.out.println("Normalising OK");
 
 			System.out.println("FFT");
-			SignalConverter scReduced = new SignalConverter();
+			SignalProcessing scReduced = new SignalProcessing();
 			double[][] spectrogram = scReduced.shortTermFFT(lowpassed_subsampled_normalised_signal, samplingRateReduced,
 					windowSize, windowShift);
 			System.out.println("Spectrogram FFT done");
@@ -110,7 +127,7 @@ public class ModulationSpectrogram {
 			System.out.println("Cut-off spectrum to 4Hz");
 			//public static double[][] cutSpectrum(double[][] spectrum, float minFreq, float maxfreq, int fftWindowSize, int samplingRate) {
 			
-			double[][] spectrogram_4hz = SignalConverter.cutSpectrum(spectrogram, 
+			double[][] spectrogram_4hz = SignalProcessing.cutSpectrum(spectrogram, 
 					minPossibleFreq, maxPossibleFreq,
 					scReduced.windowSizeSamples, samplingRateReduced);
 			double[] spectrogram_4hz_slice = new double[spectrogram_4hz.length];

@@ -1,12 +1,13 @@
 package it.cnr.speech.filters;
 
+import java.util.Arrays;
+
 import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 
-import it.cnr.features.Utils;
-
-import org.apache.commons.math3.transform.DftNormalization;
-import java.util.Arrays;
+import it.cnr.workflow.utilities.SignalProcessing;
+import it.cnr.workflow.utilities.UtilsMath;
 
 public class LowPassFilterDynamic {
 	
@@ -18,8 +19,8 @@ public class LowPassFilterDynamic {
 	public LowPassFilterDynamic(double freq, double samplingRate, double windowSizeSec) {
 		this.freq = freq;
 		this.samplingRate = samplingRate;
-		int windowSizeSamples = Utils.timeToSamples(windowSizeSec, samplingRate);
-		this.windowSize = Utils.powerTwoApproximation(windowSizeSamples);
+		int windowSizeSamples = SignalProcessing.timeToSamples(windowSizeSec, samplingRate);
+		this.windowSize = UtilsMath.powerTwoApproximation(windowSizeSamples);
 		this.cbin = (int) Math.floor(freq * (double) windowSize / samplingRate);
 		System.out.println("Window size to be used in filter: "+this.windowSize+" (samples)");
 	}
@@ -57,7 +58,7 @@ public class LowPassFilterDynamic {
         return filteredSignal;
     }
 
-    protected static double[] hammingWindow(double[] windowedSegment){
+    public static double[] hammingWindow(double[] windowedSegment){
         double w[] = new double[windowedSegment.length];
         for (int n = 0; n < windowedSegment.length; n++){
             w[n] = 0.54 - 0.46 * Math.cos( (2 * Math.PI * n) / (double) (windowedSegment.length - 1) );
@@ -71,7 +72,7 @@ public class LowPassFilterDynamic {
         return windowedSegmentHW;
     }
     
-    protected static double[] getWindowedSegment(double[] signal, int startIdx, int windowSize) {
+    public static double[] getWindowedSegment(double[] signal, int startIdx, int windowSize) {
         int signalLength = signal.length;
         //int endIdx = Math.min(startIdx + windowSize, (signalLength-1));
 

@@ -9,19 +9,20 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import it.cnr.speech.audiofeatures.Energy;
+import it.cnr.speech.audiofeatures.PitchExtractor;
 import it.cnr.speech.audiofeatures.SyllabicEnergyPitchExtractor;
-import it.cnr.speech.segmentation.Energy;
-import it.cnr.speech.segmentation.PitchExtractor;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.utilities.UtilsVectorMatrix;
 
 public class FeatureExtractor {
 
 	public double SNR;
-	public Configuration config;
+	public WorkflowConfiguration config;
 	
 	public FeatureExtractor() {}
 	
-	public FeatureExtractor(Configuration config) {
+	public FeatureExtractor(WorkflowConfiguration config) {
 		this.config = config;
 	}
 	
@@ -61,7 +62,7 @@ public class FeatureExtractor {
 		
 		if (standardise) {
 			System.out.println("Standardising the matrix...");
-			Utils u = new Utils();
+			UtilsVectorMatrix u = new UtilsVectorMatrix();
 			featureMatrix = u.standardize(featureMatrix);
 			
 		}

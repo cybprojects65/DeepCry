@@ -11,9 +11,9 @@ import java.util.UUID;
 
 import it.cnr.clustering.MultiKMeans;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.features.Utils;
 import it.cnr.hmm.HMMManager;
 import it.cnr.models.lstm.DichotomicLSTM;
+import it.cnr.workflow.utilities.UtilsVectorMatrix;
 
 public class DeepLearningManager {
 

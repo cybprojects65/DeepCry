@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.coroetal2023.CryDetectorCoroetAl2023;
 
 public class TestCryDetector {

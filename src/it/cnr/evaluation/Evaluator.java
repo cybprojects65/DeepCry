@@ -5,9 +5,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cnr.features.Utils;
 import it.cnr.speech.audiofeatures.AudioBits;
-import jdk.internal.misc.FileSystemOption;
+import it.cnr.workflow.utilities.SignalProcessing;
 
 public class Evaluator {
 
@@ -88,10 +87,10 @@ public class Evaluator {
 		System.out.println("Kappa L&K=" + cohensKappaLK);
 		System.out.println("Kappa F=" + cohensKappaF);
 
-		System.out.println("FP=" + approx(Utils.samplesToTime(FP, sfrequency)) + "s");
-		System.out.println("FN=" + approx(Utils.samplesToTime(FN, sfrequency)) + "s");
-		System.out.println("TP=" + approx(Utils.samplesToTime(TP, sfrequency)) + "s");
-		System.out.println("TN=" + approx(Utils.samplesToTime(TN, sfrequency)) + "s");
+		System.out.println("FP=" + approx(SignalProcessing.samplesToTime(FP, sfrequency)) + "s");
+		System.out.println("FN=" + approx(SignalProcessing.samplesToTime(FN, sfrequency)) + "s");
+		System.out.println("TP=" + approx(SignalProcessing.samplesToTime(TP, sfrequency)) + "s");
+		System.out.println("TN=" + approx(SignalProcessing.samplesToTime(TN, sfrequency)) + "s");
 
 	}
 

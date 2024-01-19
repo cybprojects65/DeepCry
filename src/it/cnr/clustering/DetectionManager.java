@@ -7,32 +7,38 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.Utils;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.utilities.SignalProcessing;
 
-public class ClusteringManager {
+public class DetectionManager {
 	
 	public HashMap<Integer, Cluster> clusteredFeatures; 
 	public HashMap<Integer, Integer> vectorID2ClusterID; 
 	public HashMap<Integer, double [] > centroids;
 	public HashMap<Integer, String> centroid_interpretations;
-	public Configuration config;
+	public WorkflowConfiguration config;
 	public File audio;
 	public static String HIGH_EP = "H";
 	public boolean highriskclusterfound = false;
 	public String labels [];
 	public double times[];
 	
-	public ClusteringManager(Configuration config, File audio) {
+	public DetectionManager(WorkflowConfiguration config, File audio) {
 		this.config = config;
 		this.audio = audio;
 	}
 	
-	public void clusterFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double[] thresholdPerFeature) throws Exception{
+	public void detectHighValuedFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double[] thresholdPerFeature) throws Exception{
 		System.out.println("Starting multi-k-means clustering");
-		MultiKMeans clusterer = new MultiKMeans();
+		
+		//XMeansClustering clusterer = new XMeansClustering();
 		//File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,1,10);
-		File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,minClusters,maxClusters);
+		//MultiKMeans clusterer = new MultiKMeans();
+		//File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,minClusters,maxClusters);
+		
+		QuickKMeans cl = new QuickKMeans();
+		File clusterFile = cl.kMeans(features,maxClusters , outputFolder);
+		
 		clusteredFeatures = new HashMap<Integer, Cluster>();
 		vectorID2ClusterID = new HashMap<Integer, Integer>();
 		
@@ -104,7 +110,7 @@ public class ClusteringManager {
 	
 	
 	public File toLab() throws Exception{
-		double times[] = Utils.featureTimesInSec(config.energyWindow4Analysis,audio);
+		double times[] = SignalProcessing.featureTimesInSec(config.energyWindow4Analysis,audio);
 		int nfeatures = vectorID2ClusterID.keySet().size();
 		String labels [] = new String[times.length];
 		for (int i=0;i<nfeatures;i++) {
@@ -124,7 +130,7 @@ public class ClusteringManager {
 	public File toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec) throws Exception{
 		
 		//toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, String [] labels) throws Exception{
-		double times[] = Utils.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
+		double times[] = SignalProcessing.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
 		int nfeatures = vectorID2ClusterID.keySet().size();
 		
 		String labels [] = new String[times.length];
@@ -148,7 +154,7 @@ public class ClusteringManager {
 	public File toLabCTC(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, double minLabelTimeSec) throws Exception{
 		
 		//toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, String [] labels) throws Exception{
-		times = Utils.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
+		times = SignalProcessing.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
 		double lastTime = times[times.length-1];
 		
 		int nfeatures = vectorID2ClusterID.keySet().size();

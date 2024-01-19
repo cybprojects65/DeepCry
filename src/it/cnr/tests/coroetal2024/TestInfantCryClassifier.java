@@ -2,14 +2,14 @@ package it.cnr.tests.coroetal2024;
 
 import java.io.File;
 
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.coroetal2024.CryDetectorClassifier;
 
 public class TestInfantCryClassifier {
 
 	public static void main(String[] args) throws Exception {
 
-		Configuration config = new Configuration();
+		WorkflowConfiguration config = new WorkflowConfiguration();
 
 		config.maxSilence = 0.5f;
 		config.minimumAudioLength = 5f;

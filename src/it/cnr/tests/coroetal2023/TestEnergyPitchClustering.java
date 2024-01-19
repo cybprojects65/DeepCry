@@ -9,7 +9,7 @@ import it.cnr.clustering.MultiKMeans;
 import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
 
 public class TestEnergyPitchClustering {
 
@@ -20,7 +20,7 @@ public class TestEnergyPitchClustering {
 		//File fold = new File("C:\\Users\\Utente\\Ricerca\\Experiments\\NINA Infant Cry\\SUB\\SUB1\\energysegmentation_0.5\\audio_segment_0.wav_energysegmentation_e0.1_p0.1");
 		File fold = new File("C:\\Users\\Utente\\Ricerca\\Experiments\\NINA Infant Cry\\SUB\\SUB1\\energysegmentation_0.5\\audio_segment_1.wav_energysegmentation_e0.1_p0.1");
 		//File fold = new File("C:\\Users\\Utente\\Ricerca\\Experiments\\NINA Infant Cry\\SUB\\SUB1\\energysegmentation_0.5\\audio_segment_14.wav_energysegmentation_e0.1_p0.1");
-		Configuration c = new Configuration(); 
+		WorkflowConfiguration c = new WorkflowConfiguration(); 
 		
 		MultiKMeans clusterer = new MultiKMeans();
 		FeatureExtractor extractor = new FeatureExtractor();

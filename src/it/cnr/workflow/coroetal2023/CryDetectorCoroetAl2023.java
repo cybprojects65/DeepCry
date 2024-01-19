@@ -12,9 +12,9 @@ import it.cnr.evaluation.Evaluator;
 import it.cnr.evaluation.Range;
 import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.features.Utils;
 import it.cnr.speech.audiofeatures.AudioBits;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.utilities.SignalProcessing;
 
 public class CryDetectorCoroetAl2023 {
 
@@ -28,13 +28,13 @@ public class CryDetectorCoroetAl2023 {
 	public double maxCryAnnotationPerc = 0.98;
 
 	public CryDetectorCoroetAl2023() {
-		this.config = new Configuration();
+		this.config = new WorkflowConfiguration();
 		System.out.println("Current configuration:\n" + config.toString());
 	}
 
-	public Configuration config;
+	public WorkflowConfiguration config;
 
-	public CryDetectorCoroetAl2023(Configuration config) {
+	public CryDetectorCoroetAl2023(WorkflowConfiguration config) {
 		this.config = config.clone();
 		System.out.println("Current configuration:\n" + config.toString());
 	}
@@ -90,7 +90,7 @@ public class CryDetectorCoroetAl2023 {
 			float sfrequency = ab.getAudioFormat().getSampleRate();
 			int nsamples = ab.getShortVectorAudio().length;
 			ab.ais.close();
-			double durationinsec = Utils.samplesToTime(nsamples, (double)sfrequency);
+			double durationinsec = SignalProcessing.samplesToTime(nsamples, (double)sfrequency);
 			
 			Range [] ranges = eval.annotationToRanges(annotation);
 			double annotatedDuration = 0;

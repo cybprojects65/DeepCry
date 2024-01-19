@@ -1,4 +1,4 @@
-package it.cnr.speech.filters;
+package it.cnr.workflow.utilities;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -16,10 +16,10 @@ import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.MemoryExampleTable;
 
-import it.cnr.features.CorpusCleaner;
-import it.cnr.features.Utils;
+import it.cnr.clustering.BigSamplesTable;
 import it.cnr.speech.audiofeatures.AudioBits;
-import it.cnr.speech.clustering.BigSamplesTable;
+import it.cnr.speech.filters.Delta;
+import it.cnr.speech.filters.LowPassFilterDynamic;
 import marytts.signalproc.display.SpectrogramCustom;
 import marytts.signalproc.window.Window;
 
@@ -29,7 +29,7 @@ import marytts.signalproc.window.Window;
  * @author coro
  * 
  */
-public class SignalConverter {
+public class SignalProcessing {
 
 	public static double calculateSpectralEntropy(double[] frequencies) {
         // Normalize the spectrum to obtain probabilities
@@ -88,8 +88,8 @@ public class SignalConverter {
 				if (i< (times.length-1 ) )
 					time1 = times[i+1];
 				
-				int sampletime0 = time2Sample(time0, sfrequency);
-				int sampletime1 = time2Sample(time1, sfrequency);
+				int sampletime0 = timeToSamples(time0, (double) sfrequency);
+				int sampletime1 = timeToSamples(time1, (double) sfrequency);
 				
 				double[] subsignal = Arrays.copyOfRange(signal, sampletime0, sampletime1+1);
 				totalSamples=totalSamples+subsignal.length;
@@ -121,8 +121,8 @@ public class SignalConverter {
 				if (i< (times.length-1 ) )
 					time1 = times[i+1];
 				
-				int sampletime0 = time2Sample(time0, sfrequency);
-				int sampletime1 = time2Sample(time1, sfrequency);
+				int sampletime0 = timeToSamples(time0, (double) sfrequency);
+				int sampletime1 = timeToSamples(time1, (double) sfrequency);
 				
 				short[] subsignal = Arrays.copyOfRange(signal, sampletime0, sampletime1+1);
 				totalSamples=totalSamples+subsignal.length;
@@ -171,10 +171,10 @@ public class SignalConverter {
 		return aelSignal;
 	}
 	
-	int windowShiftSamples;
-	int windowSizeSamples;
-	int samplingRate;
-	double signal[];
+	public int windowShiftSamples;
+	public int windowSizeSamples;
+	public int samplingRate;
+	public double signal[];
 	public void getSignal(File audio) throws Exception{
 		AudioBits bits = new AudioBits(audio);
 		 signal = bits.getDoubleVectorAudio();
@@ -189,13 +189,13 @@ public class SignalConverter {
 	}
 	
 	public double[][] shortTermFFT(double[] signal, int samplingRate ,double windowSize, double windowShift) throws Exception{	
-		windowSizeSamples = Utils.timeToSamples(windowSize, samplingRate);
+		windowSizeSamples = SignalProcessing.timeToSamples(windowSize, samplingRate);
 		System.out.println("Original window sample: "+windowSize+"s"+" "+windowSizeSamples+" (samples)");
-		windowSizeSamples = Utils.powerTwoApproximation(windowSizeSamples);
-		System.out.println("Approx window sample: "+Utils.samplesToTime(windowSizeSamples,samplingRate) +"s"+" "+windowSizeSamples+" (samples)");
+		windowSizeSamples = UtilsMath.powerTwoApproximation(windowSizeSamples);
+		System.out.println("Approx window sample: "+SignalProcessing.samplesToTime(windowSizeSamples,samplingRate) +"s"+" "+windowSizeSamples+" (samples)");
 		
-		windowShiftSamples = Utils.timeToSamples(windowShift, samplingRate);
-		windowShiftSamples = Utils.powerTwoApproximation(windowShiftSamples);
+		windowShiftSamples = SignalProcessing.timeToSamples(windowShift, samplingRate);
+		windowShiftSamples = UtilsMath.powerTwoApproximation(windowShiftSamples);
 		
 		System.out.println("Running FFT with "+windowSizeSamples+" by "+windowShiftSamples+" ...");
 		
@@ -468,10 +468,6 @@ public class SignalConverter {
 		return bestIndex - 1;
 	}
 
-	public static double sample2Time(int sample, int sampleRate) {
-		return (double) sample / (double) sampleRate;
-	}
-
 	
 	public static double[] signalTimeLine(int signalLength, double samplingRate) {
 		double time[] = new double[signalLength];
@@ -529,10 +525,6 @@ public class SignalConverter {
 
 	public static int spectrogramIndex(float linearTime, float windowShiftTime) {
 		return (int) (linearTime / windowShiftTime);
-	}
-
-	public static int time2Sample(double time, int sampleRate) {
-		return (int) (time * sampleRate);
 	}
 
 	public double[] averagepower;
@@ -604,4 +596,60 @@ public class SignalConverter {
 		return subsignal;
 	}
 
+
+
+	// ###########Signal processing
+	public static short[] silence(double durationInSec, double samplingFreq) {
+
+		int nsamp = timeToSamples(durationInSec, samplingFreq);
+		short[] d = new short[nsamp];
+		for (int i = 0; i < nsamp; i++) {
+			d[i] = 0;
+		}
+		return d;
+	}
+
+	public static double samplesToTime(int samples, double fs) {
+		return (double) samples / fs;
+	}
+
+	public static int timeToSamples(double time, double fs) {
+		return (int) Math.round(fs * time);
+	}
+
+	public static double[] featureTimesInSec(double windowShift, File audio) throws Exception {
+		AudioBits bits = new AudioBits(audio);
+		short[] signal = bits.getShortVectorAudio();
+		bits.ais.close();
+		float sfrequency = bits.getAudioFormat().getSampleRate();
+		double total_audio_sec = (double) signal.length / (double) sfrequency;
+		double t = 0;
+		int ntimes = (int) Math.floor(total_audio_sec / windowShift);
+		double times[] = new double[ntimes];
+		int counter = 0;
+		while (t < total_audio_sec) {
+			if (counter < ntimes)
+				times[counter] = t;
+			t = t + windowShift;
+			counter++;
+		}
+		return times;
+
+	}
+
+	public static double[] featureTimesInSec(double windowShift, int sfrequency, int signalLength) throws Exception {
+		double total_audio_sec = (double) signalLength / (double) sfrequency;
+		double t = 0;
+		int ntimes = (int) Math.floor(total_audio_sec / windowShift);
+		double times[] = new double[ntimes];
+		int counter = 0;
+		while (t < total_audio_sec) {
+			if (counter < ntimes)
+				times[counter] = t;
+			t = t + windowShift;
+			counter++;
+		}
+		return times;
+
+	}
 }

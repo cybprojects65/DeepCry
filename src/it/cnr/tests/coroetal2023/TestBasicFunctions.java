@@ -4,7 +4,8 @@ import java.io.File;
 
 import it.cnr.evaluation.Evaluator;
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.Utils;
+import it.cnr.workflow.utilities.UtilsVectorMatrix;
+import it.cnr.workflow.utilities.UtilsMath;
 
 public class TestBasicFunctions {
 
@@ -14,7 +15,7 @@ public class TestBasicFunctions {
 		double [] e1 = {1,-1};
 		//double [] e2 = {0,1};
 		double [] e2 = {1,0};
-		double angle = Utils.angle(e1, e2);
+		double angle = UtilsMath.angle(e1, e2);
 		
 		System.out.println("Angle="+angle);
 		

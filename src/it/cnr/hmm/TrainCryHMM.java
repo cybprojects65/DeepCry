@@ -7,7 +7,7 @@ import java.util.List;
 
 import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.features.FeatureExtractor;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
 
 public class TrainCryHMM {
 
@@ -16,7 +16,7 @@ public class TrainCryHMM {
 		File hmmfile = new File(DeepLearningManager.referenceFolder,"cryhmm.hmm");
 		
 		DeepLearningManager dlo = new DeepLearningManager();
-		Configuration config = new Configuration();
+		WorkflowConfiguration config = new WorkflowConfiguration();
 		
 		HashMap<Integer, List<double[]>> references = dlo.getReferenceVectors(
 				config.energyWindow4Analysis,  

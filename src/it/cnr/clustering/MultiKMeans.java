@@ -14,10 +14,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import be.ac.ulg.montefiore.run.jahmm.Hmm;
-import be.ac.ulg.montefiore.run.jahmm.ObservationVector;
-import it.cnr.speech.clustering.KMeans;
-
 public class MultiKMeans implements Serializable {
 
 	/**
@@ -54,7 +50,9 @@ public class MultiKMeans implements Serializable {
 		Kstar = 0;
 		double[] BICs = new double[maxClusters - minClusters + 1];
 		double[] difformities = new double[maxClusters - minClusters + 1];
-
+		if (minClusters==maxClusters)
+			Kstar =minClusters;
+		else {
 		for (int K = minClusters; K <= maxClusters; K++) {
 
 			//System.out.println("#######Running Kmeans clustering...K = " + K + " <= " + maxClusters);
@@ -91,12 +89,13 @@ public class MultiKMeans implements Serializable {
 
 			//System.out.println("#######\n");
 		}
-
 		System.out.println("Search between : " + minClusters + " and " + maxClusters);
 		System.out.println("Optimal BIC: " + maxBIC);
 		System.out.println("Optimal K: " + Kstar);
 		System.out.println("Optimal BIC: " + maxBIC);
 		System.out.println("M: " + M + " R:" + R + " p: " + p);
+		}
+		
 		KMeans kmeans = new KMeans(vectorLabels);
 		kmeans.compute(Kstar, 100, 10000, minElements, featureList, outputFile);
 		System.out.println(

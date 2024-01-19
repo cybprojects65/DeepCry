@@ -5,12 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
-import it.cnr.speech.utils.Utils;
+import it.cnr.workflow.utilities.SignalProcessing;
 import marytts.util.io.FileUtils;
 
 public class CorpusCleaner {
@@ -26,7 +25,7 @@ public class CorpusCleaner {
 			AudioBits bits = new AudioBits(audioFile);
 			float sfrequency = bits.getAudioFormat().getSampleRate();
 			int nsamples = bits.getShortVectorAudio().length;
-			float audioseconds = Utils.samplesToSeconds(sfrequency, nsamples);
+			double audioseconds = SignalProcessing.samplesToTime(nsamples,sfrequency);
 			bits.ais.close();
 
 			if (audioseconds < minimumLenghtinSec) {

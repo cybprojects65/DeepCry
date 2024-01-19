@@ -3,15 +3,15 @@ package it.cnr.workflow.coroetal2023;
 import java.io.File;
 import java.io.FileWriter;
 
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
 
 public class CryDetectorOptimiserCoroetAl2023 {
 
-	public Configuration findOptimalConfiguration(File audio) throws Exception {
+	public WorkflowConfiguration findOptimalConfiguration(File audio) throws Exception {
 
 		CryDetectorCoroetAl2023 cryd = null;
-		Configuration optimalConfig = new Configuration();
-		Configuration curreConfiguration = optimalConfig.clone();
+		WorkflowConfiguration optimalConfig = new WorkflowConfiguration();
+		WorkflowConfiguration curreConfiguration = optimalConfig.clone();
 
 		double optimalf1 = 0;
 		/*
@@ -72,7 +72,7 @@ public class CryDetectorOptimiserCoroetAl2023 {
 		//System.exit(0);
 		try {
 			if (ncombinations==1) {
-				curreConfiguration = new Configuration(maxSilences[0], minimumAudioLengths[0],
+				curreConfiguration = new WorkflowConfiguration(maxSilences[0], minimumAudioLengths[0],
 						energyWindow4Analyses[0], energyWindow4Analyses[0], featurewindowsizes[0],
 						featurewindowshifts[0], minNFeaturesInClusters[0], nClasses, nhiddens[0],
 						minibatches[0], nEpochss[0],false);
@@ -101,7 +101,7 @@ public class CryDetectorOptimiserCoroetAl2023 {
 										for (int nEpochs : nEpochss) {
 											long t0 = System.currentTimeMillis();
 											System.out.println("####################################################");
-											curreConfiguration = new Configuration(maxSilence, minimumAudioLength,
+											curreConfiguration = new WorkflowConfiguration(maxSilence, minimumAudioLength,
 													energyWindow4Analysis, pitchWindow4Analysis, featurewindowsize,
 													featurewindowshift, minNFeaturesInCluster, nClasses, nhidden,
 													minibatch, nEpochs,false);

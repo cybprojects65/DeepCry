@@ -7,20 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.Utils;
-import it.cnr.speech.filters.SignalConverter;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.utilities.SignalProcessing;
+import it.cnr.workflow.utilities.UtilsVectorMatrix;
+import it.cnr.workflow.utilities.UtilsMath;
 
-public class ClassificationManager extends ClusteringManager{
+public class ClassificationManager extends DetectionManager{
 	
-	public ClassificationManager(Configuration config, File audio) {
+	public ClassificationManager(WorkflowConfiguration config, File audio) {
 		super(config, audio);
 	}
 	
-	public void clusterFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold, double lowestEntropyThreshold) throws Exception{
+	public void classifyFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold, double lowestEntropyThreshold) throws Exception{
 		System.out.println("Starting multi-k-means clustering");
-		MultiKMeans clusterer = new MultiKMeans();
-		File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,minClusters,maxClusters);
+		//MultiKMeans clusterer = new MultiKMeans();
+		//XMeansClustering clusterer = new XMeansClustering();
+		//File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,minClusters,maxClusters);
+		
+		QuickKMeans cl = new QuickKMeans();
+		File clusterFile = cl.kMeans(features,minClusters , outputFolder);
+		
 		clusteredFeatures = new HashMap<Integer, Cluster>();
 		vectorID2ClusterID = new HashMap<Integer, Integer>();
 		
@@ -56,9 +62,9 @@ public class ClassificationManager extends ClusteringManager{
 			Cluster c = clusteredFeatures.get(id);
 			System.out.println("Cluster "+id+" abundance: "+c.nElements) ;
 			double [] centroid = c.calcCentroid();
-			double entropy = Utils.roundDecimal(SignalConverter.calculateSpectralEntropy(centroid),2);
-			double energy = Utils.roundDecimal(Utils.mean(centroid),2);
-			double indicator =Utils.roundDecimal(energy*entropy,2);
+			double entropy = UtilsMath.roundDecimal(SignalProcessing.calculateSpectralEntropy(centroid),2);
+			double energy = UtilsMath.roundDecimal(UtilsMath.mean(centroid),2);
+			double indicator =UtilsMath.roundDecimal(energy*entropy,2);
 			//String entropyInterpretation = ""+entropy;
 			//
 			String centroidIndicator = indicator+" ["+entropy+"/"+energy+"]"+" ("+id+")";
@@ -84,7 +90,7 @@ public class ClassificationManager extends ClusteringManager{
 	public File toLabCTC(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, double minLabelTimeSec) throws Exception{
 		
 		//toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, String [] labels) throws Exception{
-		times = Utils.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
+		times = SignalProcessing.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
 
 		int nfeatures = vectorID2ClusterID.keySet().size();
 		
@@ -129,7 +135,7 @@ public class ClassificationManager extends ClusteringManager{
 		i=0;
 		int ntimes = timesNew.size();
 		double lastTime = times[times.length-1];
-		
+		highriskclusterfound = false;
 		while(i<ntimes) {
 			Double currTime = timesNew.get(i);
 			Double nextTime = lastTime;
@@ -139,7 +145,10 @@ public class ClassificationManager extends ClusteringManager{
 			if ((nextTime-currTime)<minLabelTimeSec) {
 				labelsNew.set(i, " ");
 			}else {
+				if(labelsNew.get(i).trim().length()>0) {
 					System.out.println("OK: SUITABLE RANGE FOUND: "+(nextTime-currTime)+"s");
+					highriskclusterfound=true;
+				}
 			}
 			
 			i++;

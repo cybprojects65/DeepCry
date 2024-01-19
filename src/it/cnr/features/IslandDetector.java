@@ -5,21 +5,161 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import it.cnr.clustering.ClusteringManager;
+import it.cnr.clustering.DetectionManager;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.utilities.SignalProcessing;
 
 public class IslandDetector {
 
-	ClusteringManager clustering;
-	Configuration config;
+	DetectionManager clustering;
+	WorkflowConfiguration config;
 	File audioFile ; 
-	public IslandDetector(ClusteringManager clustering, Configuration config, File audioFile) {
+	
+	public IslandDetector(DetectionManager clustering, WorkflowConfiguration config, File audioFile) {
 		
 		this.clustering = clustering;
 		this.config = config;
 		this.audioFile = audioFile;
+	}
+	
+	public IslandDetector(WorkflowConfiguration config, File audioFile) {
+		
+		this.clustering = null;
+		this.config = config;
+		this.audioFile = audioFile;
+	}
+	
+
+
+	public List<double[]> extendIntervalsThroughEnergyIslands(List<double[]> times) {
+		
+		FeatureExtractor fe = new FeatureExtractor(config);
+		double [] energyCurve = fe.getEnergyFeatures(audioFile);
+		
+		List<int[]> timeIndices = new ArrayList<>();
+		for (double [] t:times) {
+			
+			int e0 = (int) Math.floor(t[0]/(double)config.energyWindow4Analysis);
+			int e1 = (int) Math.floor(t[1]/(double)config.energyWindow4Analysis);
+			int [] newInterval = extendTimeInterval(energyCurve, e0, e1);
+			timeIndices.add(newInterval);
+			
+		}
+		
+		timeIndices = mergeIntervals(timeIndices);
+		
+		List<double []> newtimes = new ArrayList<>();
+		for (int []ti:timeIndices) {
+			
+			double t0 = ((double) ti[0]*(double)config.energyWindow4Analysis);
+			double t1 = ((double) ti[1]*(double)config.energyWindow4Analysis);
+			double nt [] = {t0,t1};
+			newtimes.add(nt);
+		}
+		
+		return newtimes;
+	}
+	
+	public int[] extendTimeInterval(double [] energyCurve, int e0, int e1) {
+		//int e0 = (int) Math.floor(t0/(double)config.energyWindow4Analysis);
+		//int e1 = (int) Math.floor(t0/(double)config.energyWindow4Analysis);
+		
+		double currentEnergy = energyCurve[e0];
+		int stopback = e0;
+		for (int k=e0-1;k>=0;k--) {
+			double compare_en = energyCurve[k];
+			double diff = (currentEnergy-compare_en)/(compare_en);
+			//if (diff < 0 || diff<0.5) {
+			if (diff > 0 && diff<0.5) {
+				//possibly revise: energy increase should be kept!
+				stopback = k;
+				break;
+			}  
+		}
+		
+		int stopforw = e1;
+		for (int k=e1+1;k<energyCurve.length;k++) {
+			double compare_en= energyCurve[k];
+			double diff = (currentEnergy-compare_en)/(compare_en);
+			if (diff > 0 && diff<0.5) {
+				stopforw = k;
+				break;
+			}  
+		}
+		
+		int[] newInterval = {stopback,stopforw};
+
+		return newInterval;
+	}
+	
+	
+	public List<int[]> mergeIntervals(List<int[]> islands) {
+		
+		
+		List<int[]> non_over_islands = new ArrayList<>();
+		for (int[] island: islands) {
+			
+			int a = island[0];
+			int b = island[1];
+			
+			int islA = fallsIn(a, non_over_islands);
+			int islB = fallsIn(b, non_over_islands);
+			if (islA==-1 && islB==-1) {
+				int islandAB [] = {a,b};
+				int inclusion = includes(islandAB,non_over_islands);
+				if (inclusion>-1) {
+					islA = inclusion;
+					islB = inclusion;
+				}
+			}
+			
+			
+			if (islA>-1 && islB>-1) {
+				int a0 = non_over_islands.get(islA)[0];
+				int b0 = non_over_islands.get(islA)[1];
+				int a1 = non_over_islands.get(islB)[0];
+				int b1 = non_over_islands.get(islB)[1];
+				
+				if (islA!=islB) {
+					
+					int ax = Math.min(a0,a1);
+					int bx = Math.max(b0,b1);
+					int islandX [] = {ax,bx};
+					non_over_islands.set(islA, islandX);
+					non_over_islands.remove(islB);
+					non_over_islands=cleanUp(islandX, non_over_islands);
+				}else {
+					int ax = Math.min(a0,a);
+					int bx = Math.max(b,b0);
+					int islandX [] = {ax,bx};
+					non_over_islands.set(islA, islandX);
+					non_over_islands=cleanUp(islandX, non_over_islands);
+				}
+			}else if (islA>-1){
+				int a0 = non_over_islands.get(islA)[0];
+				int b0 = non_over_islands.get(islA)[1];
+				int ax = Math.min(a0,a);
+				int bx = Math.max(b,b0);
+				int islandX [] = {ax,bx};
+				non_over_islands.set(islA, islandX);
+				non_over_islands=cleanUp(islandX, non_over_islands);
+			}else if (islB>-1){
+				int a0 = non_over_islands.get(islB)[0];
+				int b0 = non_over_islands.get(islB)[1];
+				int ax = Math.min(a0,a);
+				int bx = Math.max(b,b0);
+				int islandX [] = {ax,bx};
+				non_over_islands.set(islB, islandX);
+				non_over_islands=cleanUp(islandX, non_over_islands);
+			}else {
+				non_over_islands.add(island);
+			}
+			
+		}
+		
+		return non_over_islands;
 	}
 	
 	//detects islands of high energy around a cluster of high energy-pitch 
@@ -39,7 +179,7 @@ public class IslandDetector {
 			Integer id = i;
 			Integer clusterID = clustering.vectorID2ClusterID.get(id);
 			String interpretation = clustering.centroid_interpretations.get(clusterID);
-			if (interpretation.equals(ClusteringManager.HIGH_EP)) {
+			if (interpretation.equals(DetectionManager.HIGH_EP)) {
 				//extend backwards
 				double currentEnergy = energyCurve[i];
 				int stopback = i;
@@ -149,10 +289,10 @@ public class IslandDetector {
 			int isl1 = island[1];
 			
 			if (isl0<isl1) {
-				double t0 = (isl0*(double)config.energyWindow4Analysis);
-				double t1 = (isl1*(double)config.energyWindow4Analysis);
-				int i0 = Utils.timeToSamples(t0, sfrequency);
-				int i1 = Utils.timeToSamples(t1, sfrequency);
+				double t0 = ((double) isl0*(double)config.energyWindow4Analysis);
+				double t1 = ((double) isl1*(double)config.energyWindow4Analysis);
+				int i0 = SignalProcessing.timeToSamples(t0, sfrequency);
+				int i1 = SignalProcessing.timeToSamples(t1, sfrequency);
 				System.out.println("Signal segment n. "+idxIsl+" from "+t0+"s to "+t1+"s");
 				
 				short[] subsignal = Arrays.copyOfRange(signal, i0, i1+1);

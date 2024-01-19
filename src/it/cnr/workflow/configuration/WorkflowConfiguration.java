@@ -1,6 +1,6 @@
 package it.cnr.workflow.configuration;
 
-public class Configuration {
+public class WorkflowConfiguration {
 
 	public float maxSilence = 0.500f; // s
 	public float minimumAudioLength = 5; // s
@@ -19,11 +19,11 @@ public class Configuration {
 	
 	public boolean standardiseFeatures = true;
 	
-	public Configuration() {
+	public WorkflowConfiguration() {
 		
 	}
 	
-	public Configuration(float maxSilence, float minimumAudioLength, float energyWindow4Analysis,
+	public WorkflowConfiguration(float maxSilence, float minimumAudioLength, float energyWindow4Analysis,
 			float pitchWindow4Analysis, float featurewindowsize, float featurewindowshift, int minNFeaturesInCluster,
 			int nClasses, int nhidden, int minibatch, int nEpochs, boolean standardiseFeatures) {
 
@@ -66,9 +66,9 @@ public class Configuration {
 		
 	}
 	
-	public Configuration clone() {
+	public WorkflowConfiguration clone() {
 		
-		return new Configuration( maxSilence, minimumAudioLength, energyWindow4Analysis,
+		return new WorkflowConfiguration( maxSilence, minimumAudioLength, energyWindow4Analysis,
 				pitchWindow4Analysis, featurewindowsize, featurewindowshift, minNFeaturesInCluster,
 				nClasses, nhidden, minibatch, nEpochs,standardiseFeatures);
 		

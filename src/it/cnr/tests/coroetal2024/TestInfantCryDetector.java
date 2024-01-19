@@ -2,14 +2,14 @@ package it.cnr.tests.coroetal2024;
 
 import java.io.File;
 
-import it.cnr.workflow.configuration.Configuration;
+import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.coroetal2024.CryDetectorClassifier;
 
 public class TestInfantCryDetector {
 
 	public static void main(String[] args) throws Exception {
 
-		Configuration config = new Configuration();
+		WorkflowConfiguration config = new WorkflowConfiguration();
 
 		config.maxSilence = 0.5f;
 		config.minimumAudioLength = 5f;
@@ -57,7 +57,11 @@ public class TestInfantCryDetector {
 		//total duration = 1250s = 20.8 min = 1 250 000 energy windows = 100 000 windows of ms (250 ms) extracted every 12ms 
 		
 		File allAudioToAnalyse [] = {
-				audio7,audio8,audio1,audio2,audio3,audio4,audio5,audio6,audio9,audio10
+				audio7,
+				//audio8,
+				audio1,audio2,audio3,audio4,audio5,audio6,
+				audio9
+				,audio10
 		};
 		
 		
