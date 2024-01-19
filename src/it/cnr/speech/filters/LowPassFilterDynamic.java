@@ -6,8 +6,8 @@ import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 
-import it.cnr.workflow.utilities.SignalProcessing;
-import it.cnr.workflow.utilities.UtilsMath;
+import it.cnr.workflow.utils.SignalProcessing;
+import it.cnr.workflow.utils.UtilsMath;
 
 public class LowPassFilterDynamic {
 	

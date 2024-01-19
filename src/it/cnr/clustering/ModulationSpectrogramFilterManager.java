@@ -7,9 +7,9 @@ import java.util.LinkedHashMap;
 
 import it.cnr.speech.filters.ModulationSpectrogram;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
-import it.cnr.workflow.utilities.SignalProcessing;
-import it.cnr.workflow.utilities.UtilsVectorMatrix;
-import it.cnr.workflow.utilities.UtilsMath;
+import it.cnr.workflow.utils.SignalProcessing;
+import it.cnr.workflow.utils.UtilsMath;
+import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class ModulationSpectrogramFilterManager extends ClassificationManager{
 	

@@ -1,4 +1,4 @@
-package it.cnr.workflow.coroetal2024;
+package it.cnr.workflow.coroetal2024.early;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,10 +28,10 @@ import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
 import it.cnr.speech.filters.ModulationSpectrogram;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
-import it.cnr.workflow.utilities.SignalProcessing;
-import it.cnr.workflow.utilities.UtilsVectorMatrix;
-import it.cnr.workflow.utilities.UtilsMath;
-import it.cnr.workflow.utilities.UtilsObjects;
+import it.cnr.workflow.utils.SignalProcessing;
+import it.cnr.workflow.utils.UtilsMath;
+import it.cnr.workflow.utils.UtilsObjects;
+import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class CryDetectorClassifier {
 

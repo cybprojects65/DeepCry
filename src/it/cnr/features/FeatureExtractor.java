@@ -13,7 +13,7 @@ import it.cnr.speech.audiofeatures.Energy;
 import it.cnr.speech.audiofeatures.PitchExtractor;
 import it.cnr.speech.audiofeatures.SyllabicEnergyPitchExtractor;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
-import it.cnr.workflow.utilities.UtilsVectorMatrix;
+import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class FeatureExtractor {
 

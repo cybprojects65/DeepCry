@@ -9,7 +9,7 @@ import javax.sound.sampled.AudioFormat;
 
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
-import it.cnr.workflow.utilities.SignalProcessing;
+import it.cnr.workflow.utils.SignalProcessing;
 
 public class ModulationSpectrogram {
 

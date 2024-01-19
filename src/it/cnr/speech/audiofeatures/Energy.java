@@ -2,7 +2,7 @@ package it.cnr.speech.audiofeatures;
 
 import java.io.File;
 
-import it.cnr.workflow.utilities.UtilsMath;
+import it.cnr.workflow.utils.UtilsMath;
 
 public class Energy {
 

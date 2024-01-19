@@ -4,8 +4,8 @@ import java.io.File;
 
 import it.cnr.evaluation.Evaluator;
 import it.cnr.features.CorpusCleaner;
-import it.cnr.workflow.utilities.UtilsVectorMatrix;
-import it.cnr.workflow.utilities.UtilsMath;
+import it.cnr.workflow.utils.UtilsMath;
+import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class TestBasicFunctions {
 

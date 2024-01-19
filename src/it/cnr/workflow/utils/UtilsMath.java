@@ -1,4 +1,4 @@
-package it.cnr.workflow.utilities;
+package it.cnr.workflow.utils;
 
 import java.math.BigInteger;
 import java.util.Arrays;

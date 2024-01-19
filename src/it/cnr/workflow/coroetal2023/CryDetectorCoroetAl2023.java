@@ -14,7 +14,7 @@ import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
-import it.cnr.workflow.utilities.SignalProcessing;
+import it.cnr.workflow.utils.SignalProcessing;
 
 public class CryDetectorCoroetAl2023 {
 

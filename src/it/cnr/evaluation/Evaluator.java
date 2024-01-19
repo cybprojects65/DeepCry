@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.cnr.speech.audiofeatures.AudioBits;
-import it.cnr.workflow.utilities.SignalProcessing;
+import it.cnr.workflow.utils.SignalProcessing;
 
 public class Evaluator {
 

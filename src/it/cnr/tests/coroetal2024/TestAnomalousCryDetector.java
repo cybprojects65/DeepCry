@@ -3,8 +3,8 @@ package it.cnr.tests.coroetal2024;
 import java.io.File;
 
 import it.cnr.workflow.configuration.WorkflowConfiguration;
-import it.cnr.workflow.coroetal2024.AnomalousCryDetector;
-import it.cnr.workflow.coroetal2024.CryDetectorClassifier;
+import it.cnr.workflow.coroetal2024.early.CryDetectorClassifier;
+import it.cnr.workflow.coroetal2024.staging.AnomalousCryDetector;
 
 public class TestAnomalousCryDetector {
 
