@@ -62,6 +62,8 @@ public class IslandDetector {
 		return newtimes;
 	}
 	
+	public static double minEnergyRatio = 0.5;
+	public static double maxEnergyRatio = 100;
 	public int[] extendTimeInterval(double [] energyCurve, int e0, int e1) {
 		//int e0 = (int) Math.floor(t0/(double)config.energyWindow4Analysis);
 		//int e1 = (int) Math.floor(t0/(double)config.energyWindow4Analysis);
@@ -70,24 +72,40 @@ public class IslandDetector {
 		int stopback = e0;
 		for (int k=e0-1;k>=0;k--) {
 			double compare_en = energyCurve[k];
-			double diff = (currentEnergy-compare_en)/(compare_en);
-			//if (diff < 0 || diff<0.5) {
-			if (diff > 0 && diff<0.5) {
+			//double diff = (currentEnergy-compare_en)/(currentEnergy);
+			double diff = (compare_en/currentEnergy);
+			//if (diff > 0 && diff<0.5) {
+			if (diff < minEnergyRatio) {
 				//possibly revise: energy increase should be kept!
 				stopback = k;
 				break;
-			}  
+			}
+			else if (diff > maxEnergyRatio) {
+				stopback = k;
+				break;
+			}
+			
 		}
 		
 		int stopforw = e1;
 		for (int k=e1+1;k<energyCurve.length;k++) {
 			double compare_en= energyCurve[k];
-			double diff = (currentEnergy-compare_en)/(compare_en);
-			if (diff > 0 && diff<0.5) {
+			//double diff = (currentEnergy-compare_en)/(compare_en);
+			double diff = (compare_en/currentEnergy);
+			//if (diff > 0 && diff<0.5) {
+			//if (diff > 0 && diff>0.5) {
+			if (diff<minEnergyRatio) {
 				stopforw = k;
 				break;
-			}  
+			//}else if (diff < 0 && diff<-2) {
+			}
+			else if (diff>maxEnergyRatio) {
+				stopforw = k;
+				break;
+			}
+			
 		}
+		
 		
 		int[] newInterval = {stopback,stopforw};
 
@@ -185,23 +203,24 @@ public class IslandDetector {
 				int stopback = i;
 				for (int k=i-1;k>=0;k--) {
 					double compare_en= energyCurve[k];
-					double diff = (currentEnergy-compare_en)/(compare_en);
+					double diff = (compare_en/currentEnergy);
 					//if (diff < 0 || diff<0.5) {
-					if (diff > 0 && diff<0.5) {
+					if (diff < minEnergyRatio) {
 						//possibly revise: energy increase should be kept!
 						stopback = k;
 						break;
-					}  
+					}
 				}
 				//extend forward
 				int stopforw = i;
 				for (int k=i+1;k<energyCurve.length;k++) {
 					double compare_en= energyCurve[k];
-					double diff = (currentEnergy-compare_en)/(compare_en);
-					if (diff > 0 && diff<0.5) {
+					double diff = (compare_en/currentEnergy);
+					if (diff<minEnergyRatio) {
 						stopforw = k;
 						break;
-					}  
+					//}else if (diff < 0 && diff<-2) {
+					}
 				}
 				//if we found only one vector extend the range a bit
 				if (stopback == i && stopforw ==i) {
@@ -298,6 +317,12 @@ public class IslandDetector {
 				short[] subsignal = Arrays.copyOfRange(signal, i0, i1+1);
 				totalSamples=totalSamples+subsignal.length;
 				signalIslands.add(subsignal);
+				
+				short silence[] = SignalProcessing.silence(config.maxSilence, new AudioBits(audioFile).getAudioFormat().getSampleRate());
+				totalSamples += silence.length;
+				//add silence
+				signalIslands.add(silence);
+				
 				idxIsl++;
 			}
 			

@@ -440,7 +440,23 @@ public class UtilsVectorMatrix {
 	 * return elements; }
 	 */
 
-	
+	//binarises a matrix based on thresholds per column
+	public static double[][] binariseMatrix(double [][] matrix, double[] binarisationThresholds){
+		int nrow = matrix.length;
+		int ncol = matrix[0].length;
+		double [][] binarymatrix = new double[nrow][ncol];
+		
+		for (int i=0;i<nrow;i++) {
+			for (int j=0;j<ncol;j++) {
+				if (matrix[i][j]>binarisationThresholds[j]) {
+					binarymatrix[i][j] = 1;
+				}else
+					binarymatrix[i][j] = 0;
+			}
+		}
+		
+		return binarymatrix;
+	}
 
 	
 

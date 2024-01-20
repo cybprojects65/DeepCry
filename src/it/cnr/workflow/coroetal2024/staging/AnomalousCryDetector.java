@@ -32,6 +32,7 @@ public class AnomalousCryDetector {
     String[] classificationLabels;
     
 	// ################CRY DETECTION PARAMETERS
+    public double minimumScaledEnergyPitch = -0.5d;
 	public int maxTriesToFindValidIslandsAndClusters = 5;
 	public double reductionFactor4Retry = 0.3;
 	public double minimumMSContinuosWindowDetection = 0.5; // seconds
@@ -47,7 +48,7 @@ public class AnomalousCryDetector {
 	public double maxFrequencyForClassification = 3000;
 	
 	//################TEST PARAMETERS
-	boolean skippreprocessing = true;
+	public static boolean skippreprocessing = false;
 	
 	public AnomalousCryDetector(WorkflowConfiguration config) {
 		this.config = config;
@@ -94,8 +95,7 @@ public class AnomalousCryDetector {
 		System.out.println("#################################################");
 		
 		System.out.println("#5 - SIGNAL ISLAND MERGING - START#");
-		//TODO: add some silence between the recordings  (from 300 to 500 ms)
-			File unifiedAudioFile = mergeIslands(allAudiotoAnalyse);
+		File unifiedAudioFile = mergeIslands(allAudiotoAnalyse);
 		System.out.println("#5 - SIGNAL ISLAND MERGING - START#");
 		File mscacheFile = new File(unifiedAudioFile.getParentFile(),"ms.bin");
 		File msCSVFile = new File(unifiedAudioFile.getParentFile(),"ms.csv");
@@ -135,7 +135,8 @@ public class AnomalousCryDetector {
 			saveNonEmptyAnnotatedSignal(mod_spec_audio, unifiedAudioFile, classificationTimeRanges, classificationLabels);
 			System.out.println("#10 - SAVING DETECTED ANOMALOUS CRY IN A SEPARATE FILE - END#");
 		}else {
-			System.out.println("#EXIT : NO ANOMALY DETECTED#");
+			System.out.println("#####EXIT : NO ANOMALY DETECTED#");
+			System.err.println("#####EXIT : NO ANOMALY DETECTED#");
 		}
 		
 		System.out.println("#PROCESS END.#");
@@ -265,7 +266,7 @@ public class AnomalousCryDetector {
 			throws Exception {
 		DetectionManager clustering = null;
 
-		double[] thresholds = UtilsVectorMatrix.initializeVector(featureMatrix[0].length, 1);
+		double[] thresholds = UtilsVectorMatrix.initializeVector(featureMatrix[0].length, minimumScaledEnergyPitch);
 		for (int tryn = 1; tryn <= maxTriesToFindValidIslandsAndClusters; tryn++) {
 
 			clustering = new EnergyPitchFilterManager(config, toneUnitCleanedFile);

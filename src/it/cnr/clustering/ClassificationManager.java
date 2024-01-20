@@ -146,7 +146,7 @@ public class ClassificationManager extends DetectionManager{
 				labelsNew.set(i, " ");
 			}else {
 				if(labelsNew.get(i).trim().length()>0) {
-					System.out.println("OK: SUITABLE RANGE FOUND: "+(nextTime-currTime)+"s");
+					//System.out.println("OK: SUITABLE RANGE FOUND: "+(nextTime-currTime)+"s");
 					highriskclusterfound=true;
 				}
 			}
