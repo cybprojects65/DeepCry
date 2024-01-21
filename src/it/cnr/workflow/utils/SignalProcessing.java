@@ -104,7 +104,7 @@ public class SignalProcessing {
 		
 	}
 
-	public static short[] extractAnnotatedSignal(File audio, double times[], String[] labels) throws Exception{
+	public static short[] extractAnnotatedSignal(File audio, double times[], String[] labels, double intersilenceSec) throws Exception{
 		
 		AudioBits ab = new AudioBits(audio);
 		short[] signal = ab.getShortVectorAudio();
@@ -128,6 +128,14 @@ public class SignalProcessing {
 				totalSamples=totalSamples+subsignal.length;
 				
 				segments.add(subsignal);
+				
+				if (intersilenceSec>0) {
+					short silence[] = SignalProcessing.silence(intersilenceSec, sfrequency);
+					totalSamples += silence.length;
+					//add silence
+					segments.add(silence);
+				}
+				
 			}
 		}
 		

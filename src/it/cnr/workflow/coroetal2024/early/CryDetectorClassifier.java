@@ -206,7 +206,7 @@ public class CryDetectorClassifier {
 	}
 
 	public static void saveNonEmptyAnnotatedSignal(File outputAudiofile, File inputAudioReference, double [] times, String [] labels) throws Exception{
-		short[] reducedsignalMS = SignalProcessing.extractAnnotatedSignal(inputAudioReference, times,labels);
+		short[] reducedsignalMS = SignalProcessing.extractAnnotatedSignal(inputAudioReference, times,labels,0.2);
 		System.out.println("Saving annotated audio segments");
 		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(reducedsignalMS, outputAudiofile,
 			new AudioBits(inputAudioReference).getAudioFormat());

@@ -33,6 +33,7 @@ public class AnomalousCryDetector {
     
 	// ################CRY DETECTION PARAMETERS
     public double minimumScaledEnergyPitch = -0.5d;
+    public static double silenceSecondsBetweenDetectedHighEnergyPitchSegments=0.1; 
 	public int maxTriesToFindValidIslandsAndClusters = 5;
 	public double reductionFactor4Retry = 0.3;
 	public double minimumMSContinuosWindowDetection = 0.5; // seconds
@@ -46,9 +47,10 @@ public class AnomalousCryDetector {
 	public double minimumMSContinuosWindowClassification = 0.200;//0.220 //seconds
 	public int numberOfMSFeatures4Classification = 8;
 	public double maxFrequencyForClassification = 3000;
+	public static double silenceSecondsBetweenAnomalousCrySamples4Reporting=0.2; 
 	
 	//################TEST PARAMETERS
-	public static boolean skippreprocessing = false;
+	public static boolean skippreprocessing = true;
 	
 	public AnomalousCryDetector(WorkflowConfiguration config) {
 		this.config = config;
@@ -159,7 +161,7 @@ public class AnomalousCryDetector {
 	}
 	
 	public static void saveNonEmptyAnnotatedSignal(File outputAudiofile, File inputAudioReference, double [] times, String [] labels) throws Exception{
-		short[] reducedsignalMS = SignalProcessing.extractAnnotatedSignal(inputAudioReference, times,labels);
+		short[] reducedsignalMS = SignalProcessing.extractAnnotatedSignal(inputAudioReference, times,labels,silenceSecondsBetweenAnomalousCrySamples4Reporting);
 		System.out.println("Saving annotated audio segments");
 		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(reducedsignalMS, outputAudiofile,
 			new AudioBits(inputAudioReference).getAudioFormat());

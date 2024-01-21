@@ -9,6 +9,7 @@ import it.cnr.clustering.DetectionManager;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.coroetal2024.staging.AnomalousCryDetector;
 import it.cnr.workflow.utils.SignalProcessing;
 
 public class IslandDetector {
@@ -318,7 +319,7 @@ public class IslandDetector {
 				totalSamples=totalSamples+subsignal.length;
 				signalIslands.add(subsignal);
 				
-				short silence[] = SignalProcessing.silence(config.maxSilence, new AudioBits(audioFile).getAudioFormat().getSampleRate());
+				short silence[] = SignalProcessing.silence(AnomalousCryDetector.silenceSecondsBetweenDetectedHighEnergyPitchSegments, new AudioBits(audioFile).getAudioFormat().getSampleRate());
 				totalSamples += silence.length;
 				//add silence
 				signalIslands.add(silence);

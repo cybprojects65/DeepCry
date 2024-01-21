@@ -36,7 +36,8 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 		File msquantilesFile = new File("msquantiles.bin");
 		File boltzmannFile = new File("boltzmann.bin");
 		
-		if ( (!msquantilesFile.exists() && !boltzmannFile.exists()) || !AnomalousCryDetector.skippreprocessing) {
+		if ( (!msquantilesFile.exists() && !boltzmannFile.exists()) ) // || !AnomalousCryDetector.skippreprocessing) 
+		{
 			q3 = UtilsVectorMatrix.columnQ3(features);
 			UtilsObjects.saveObject(msquantilesFile, q3);
 			
@@ -109,7 +110,8 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 			//TODO: test boltzmann score around the mean anomaly: 9.2:
 			/*Mean anomaly :10.62 [3.005871649465976, 8.905463806856037, 17.272090319636824]
 					Mean normal :55.39 [10.259068240788212, 85.51765513680309, 93.05224798364934]*/
-			if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) {//optimal
+			//if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) {//optimal
+			if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) {
 			//if ( boltzmann.final_scores[i]>0 && boltzmann.final_scores[i]<10) {
 			//if ( boltzmann.final_scores[i]>2) {
 				//	&& energy>18
