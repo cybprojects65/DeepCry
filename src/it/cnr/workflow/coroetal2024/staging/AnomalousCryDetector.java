@@ -50,7 +50,7 @@ public class AnomalousCryDetector {
 	public static double silenceSecondsBetweenAnomalousCrySamples4Reporting=0.2; 
 	
 	//################TEST PARAMETERS
-	public static boolean skippreprocessing = true;
+	public static boolean skippreprocessing = false;
 	
 	public AnomalousCryDetector(WorkflowConfiguration config) {
 		this.config = config;

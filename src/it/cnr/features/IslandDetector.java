@@ -63,8 +63,8 @@ public class IslandDetector {
 		return newtimes;
 	}
 	
-	public static double minEnergyRatio = 0.5;
-	public static double maxEnergyRatio = 100;
+	public static double minEnergyRatio = 0.2;
+	public static double maxEnergyRatio = 1000;
 	public int[] extendTimeInterval(double [] energyCurve, int e0, int e1) {
 		//int e0 = (int) Math.floor(t0/(double)config.energyWindow4Analysis);
 		//int e1 = (int) Math.floor(t0/(double)config.energyWindow4Analysis);
@@ -81,10 +81,12 @@ public class IslandDetector {
 				stopback = k;
 				break;
 			}
+			/*
 			else if (diff > maxEnergyRatio) {
 				stopback = k;
 				break;
 			}
+			*/
 			
 		}
 		
@@ -97,13 +99,16 @@ public class IslandDetector {
 			//if (diff > 0 && diff>0.5) {
 			if (diff<minEnergyRatio) {
 				stopforw = k;
+				if (k<(energyCurve.length-1))
+					stopforw = k+1;
 				break;
 			//}else if (diff < 0 && diff<-2) {
 			}
-			else if (diff>maxEnergyRatio) {
+			/*else if (diff>maxEnergyRatio) {
 				stopforw = k;
 				break;
 			}
+			*/
 			
 		}
 		
@@ -219,6 +224,8 @@ public class IslandDetector {
 					double diff = (compare_en/currentEnergy);
 					if (diff<minEnergyRatio) {
 						stopforw = k;
+						if (k<(energyCurve.length-1))
+							stopforw = k+1;
 						break;
 					//}else if (diff < 0 && diff<-2) {
 					}

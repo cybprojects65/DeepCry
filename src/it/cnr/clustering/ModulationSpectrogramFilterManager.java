@@ -28,32 +28,76 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 	int representationalNeurons = 8; //fixed
 	int reconstructionNumSamples = 16; //fixed
 	double minPercAnomaly = 10d;
+	double [][] binaryMatrix = null;
 	
 	public DichotomicBoltzmannMachine boltzmannAnomaly(double [][] features) throws Exception{
 		
 		DichotomicBoltzmannMachine boltzmann = null;
 		double[] q3 = null;
 		File msquantilesFile = new File("msquantiles.bin");
+		File binaryMatrixFile = new File("binaryMatrix.bin");
 		File boltzmannFile = new File("boltzmann.bin");
 		
-		if ( (!msquantilesFile.exists() && !boltzmannFile.exists()) ) // || !AnomalousCryDetector.skippreprocessing) 
+		if ( (!msquantilesFile.exists() && !boltzmannFile.exists())) // || !AnomalousCryDetector.skippreprocessing) 
 		{
 			q3 = UtilsVectorMatrix.columnQ3(features);
 			UtilsObjects.saveObject(msquantilesFile, q3);
 			
-			double [][] binaryMatrix = UtilsVectorMatrix.binariseMatrix(features, q3);
+			binaryMatrix = UtilsVectorMatrix.binariseMatrix(features, q3);
+			
+			UtilsObjects.saveObject(binaryMatrixFile, binaryMatrixFile);
+			
+			double [][] goodMatrix = selectGoodMS(binaryMatrix);
 			boolean isBinaryData = true;
 			//TODO: CACHE THE BZM AND THE QUANTILES FOR BINARISATION!
 			boltzmann = new DichotomicBoltzmannMachine();
-			boltzmann.detectAnomalyComplex(binaryMatrix,minPercAnomaly, isBinaryData, encoderNeurons, decoderNeurons, representationalNeurons, nEpochs, reconstructionNumSamples);
+			//boltzmann.detectAnomalyComplex(binaryMatrix,minPercAnomaly, isBinaryData, encoderNeurons, decoderNeurons, representationalNeurons, nEpochs, reconstructionNumSamples);
+			boltzmann.detectAnomalyComplex(goodMatrix,minPercAnomaly, isBinaryData, encoderNeurons, decoderNeurons, representationalNeurons, nEpochs, reconstructionNumSamples);
 			//System.out.println("Anomalies: " + Arrays.toString(anomalies));
 			UtilsObjects.saveObject(boltzmannFile, boltzmann);
+			
 		}else {
 			q3 = (double  [])UtilsObjects.loadObject(msquantilesFile);
 			boltzmann = (DichotomicBoltzmannMachine) UtilsObjects.loadObject(boltzmannFile);
+			binaryMatrix = (double [][]) UtilsObjects.loadObject(binaryMatrixFile);
 		}
 		return boltzmann;
 	}
+	
+	public double [][] selectGoodMS(double [][] binaryMatrix){
+		
+		List<double []> selected = new ArrayList<>();
+		
+		for (int i=0;i<binaryMatrix.length;i++) {
+			
+			double[] a = binaryMatrix[i];
+			if (isgoodMS(a)) {
+				selected.add(a);
+			}
+		}
+		
+		double [][] selectedM = new double[selected.size()][binaryMatrix[0].length];
+		
+		for (int j=0;j<selectedM.length;j++) {
+			
+			selectedM[j] = selected.get(j);
+			
+		}
+		
+		return selectedM;
+	}
+	
+	public boolean isgoodMS(double [] b) {
+		
+		for (double d:b) {
+			if (d>0)
+				return true; 
+		}
+		
+		return false;
+		
+	}
+	
 	
 	public void classifyFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold, double lowestEntropyThreshold) throws Exception{
 		System.out.println("Starting MS filtering for medium entropy energy segments");
@@ -61,6 +105,12 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 		//Boltzmann anomaly detection
 		System.out.println("START OF BOLTZMANN MODEL");
 		DichotomicBoltzmannMachine boltzmann = boltzmannAnomaly(features);
+		/*
+		DichotomicBoltzmannMachine boltzmann = new DichotomicBoltzmannMachine();
+		boltzmann.final_scores = UtilsVectorMatrix.initializeVector(features.length, 0);
+		boltzmann.isOutlier =new int [features.length];
+		*/
+		
 		System.out.println("END OF BOLTZMANN MODEL");
 		//End of Boltzmann anomaly detection
 		int nrow = features.length;
@@ -93,6 +143,7 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 		double maxEnergy = averageEnergy+0.1*averageEnergy;
 		
 		System.out.println("Average Energy "+averageEnergy);
+		int bi = 0;
 		for (int i=0;i<nrow;i++) {
 
 			double entropy = UtilsMath.roundDecimal(SignalProcessing.calculateSpectralEntropy(features[i]),2);
@@ -102,7 +153,11 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 			//System.out.println("ENT:"+ModulationSpectrogram.getMSTime(i, ModulationSpectrogram.windowShift)+":"+centroidIndicator);
 			String entropyInterpretation = " ";
 			
-			int isnormal = boltzmann.isOutlier[i];
+			//int isnormal = boltzmann.isOutlier[i];
+			
+			double time = ModulationSpectrogram.getMSTime(i, ModulationSpectrogram.windowShift);
+			System.out.println("ENT:"+time+":"+centroidIndicator);
+			
 			
 			//if (indicator >lowestEntropyThreshold && indicator < entropyThreshold) {//other tests
 			//if (energy> 17.65 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) { //other tests
@@ -110,8 +165,8 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 			//TODO: test boltzmann score around the mean anomaly: 9.2:
 			/*Mean anomaly :10.62 [3.005871649465976, 8.905463806856037, 17.272090319636824]
 					Mean normal :55.39 [10.259068240788212, 85.51765513680309, 93.05224798364934]*/
-			//if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) {//optimal
-			if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) {
+			//if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.45) {//optimal: good precision - recall
+			if (energy> 17 && energy< 20.70 && entropy > 1.05 && entropy < 1.41) { //100% precision
 			//if ( boltzmann.final_scores[i]>0 && boltzmann.final_scores[i]<10) {
 			//if ( boltzmann.final_scores[i]>2) {
 				//	&& energy>18
@@ -119,17 +174,14 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 			//if (boltzmann.final_scores[i]>1.6 && boltzmann.final_scores[i]<10.8 
 					//&& energy> 17					) {
 				
-				double time = ModulationSpectrogram.getMSTime(i, ModulationSpectrogram.windowShift);
-				
-				System.out.println("ENT:"+time+":"+centroidIndicator);
-				System.out.println("Boltzmann score: "+boltzmann.final_scores[i]+" ->A="+boltzmann.isOutlier[i]);
+				//System.out.println("Boltzmann score: "+boltzmann.final_scores[i]+" ->A="+boltzmann.isOutlier[i]);
 					
 				System.out.println("\tANOMALOUS!");
 				
-				if (time<24)
-					bolzmannScoreAnomalies.add(boltzmann.final_scores[i]);
-				else
-					bolzmannScoreNormal.add(boltzmann.final_scores[i]);
+				if (isgoodMS(binaryMatrix[i])) {
+					bolzmannScoreAnomalies.add(boltzmann.final_scores[bi]);
+					bi++;
+				}
 				entropyInterpretation = "Anomalous";
 				if (!highriskclusterfound) {
 					highriskclusterfound = true;
@@ -143,7 +195,12 @@ public class ModulationSpectrogramFilterManager extends ClassificationManager{
 				vectorID2ClusterID.put(i, hepclid);
 				clusteredFeatures.put(hepclid,c);
 			}else {
-				bolzmannScoreNormal.add(boltzmann.final_scores[i]);
+				
+				if (isgoodMS(binaryMatrix[i])) {
+					bolzmannScoreNormal.add(boltzmann.final_scores[bi]);
+					bi++;
+				}
+				
 				if (!lowriskclusterfound) {
 					lowriskclusterfound = true;
 					centroid_interpretations.put(lepclid, entropyInterpretation);
