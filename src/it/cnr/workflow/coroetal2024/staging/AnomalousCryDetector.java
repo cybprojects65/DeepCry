@@ -7,10 +7,11 @@ import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 
+import it.cnr.anomaly.DLAnomalyDetection;
+import it.cnr.anomaly.MSEnergyEntropyAnomalyDetection;
 import it.cnr.clustering.ClassificationManager;
 import it.cnr.clustering.DetectionManager;
 import it.cnr.clustering.EnergyPitchFilterManager;
-import it.cnr.clustering.ModulationSpectrogramFilterManager;
 import it.cnr.features.CorpusCleaner;
 import it.cnr.features.FeatureExtractor;
 import it.cnr.features.FeatureSet;
@@ -32,7 +33,7 @@ public class AnomalousCryDetector {
     String[] classificationLabels;
     
 	// ################CRY DETECTION PARAMETERS
-    public double minimumScaledEnergyPitch = -0.5d;
+    public double minimumScaledEnergyPitch = 0d;//-0.5d;
     public static double silenceSecondsBetweenDetectedHighEnergyPitchSegments=0.1; 
 	public int maxTriesToFindValidIslandsAndClusters = 5;
 	public double reductionFactor4Retry = 0.3;
@@ -44,13 +45,14 @@ public class AnomalousCryDetector {
 	public int nClassesClassification = 20; //20
 	public double entropyEnergyThr = 32;//40;//35;//32;//26;
 	public double lowestEntropyEnergyThr = 18;
-	public double minimumMSContinuosWindowClassification = 0.200;//0.220 //seconds
+	public double minimumMSContinuosWindowClassification = 0.0250;//0.0125;//0.200;//0.220 //seconds
 	public int numberOfMSFeatures4Classification = 8;
 	public double maxFrequencyForClassification = 3000;
 	public static double silenceSecondsBetweenAnomalousCrySamples4Reporting=0.2; 
 	
 	//################TEST PARAMETERS
 	public static boolean skippreprocessing = false;
+	public static boolean useDLClassification = true;
 	
 	public AnomalousCryDetector(WorkflowConfiguration config) {
 		this.config = config;
@@ -119,9 +121,16 @@ public class AnomalousCryDetector {
 		}
 		
 		System.out.println("#7 - CLASSIFICATION OF LOW FREQUENCY MODULATION SPECTROGRAM - START#");
-		ClassificationManager classifierMS = new ModulationSpectrogramFilterManager(config,unifiedAudioFile);
-		classifierMS.classifyFeatures(msOverallMatrix, unifiedAudioFile.getParentFile(), nClassesClassification, nClassesClassification, 
+		ClassificationManager classifierMS = null;
+		if (!useDLClassification) {
+			classifierMS = new MSEnergyEntropyAnomalyDetection(config,unifiedAudioFile);
+			classifierMS.classifyFeatures(msOverallMatrix, unifiedAudioFile.getParentFile(), nClassesClassification, nClassesClassification, 
 				entropyEnergyThr, lowestEntropyEnergyThr);
+		}else {
+			classifierMS = new DLAnomalyDetection(config,unifiedAudioFile);
+			classifierMS.classifyFeatures(msOverallMatrix, unifiedAudioFile.getParentFile(), nClassesClassification, nClassesClassification, 
+				entropyEnergyThr, lowestEntropyEnergyThr);
+		}
 		System.out.println("#7 - CLASSIFICATION OF LOW FREQUENCY MODULATION SPECTROGRAM - END#");
 		
 		System.out.println("#8 - ANNOTATE SIGNAL WITH THE RAW CLASSIFIED FEATURES - START#");

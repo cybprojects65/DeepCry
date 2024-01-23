@@ -89,7 +89,8 @@ public class QuickKMeans {
 
         for (int i = 0; i < k; i++) {
             int randomIndex = random.nextInt(data.length);
-            centroids[i] = (Arrays.copyOf(data[randomIndex], data[randomIndex].length));
+            //centroids[i] = (Arrays.copyOf(data[randomIndex], data[randomIndex].length));
+            centroids[i] = data[i]; //(Arrays.copyOf(data[randomIndex], data[randomIndex].length));
         }
 
         return centroids;
@@ -152,7 +153,7 @@ public class QuickKMeans {
             if (clusterSizes[i] > 0) {
                 double[] newCentroid = new double[vectorSize];
                 for (int j = 0; j < vectorSize; j++) {
-                    newCentroid[j] = clusterSums[i][j] / clusterSizes[i];
+                    newCentroid[j] = clusterSums[i][j] / (double)clusterSizes[i];
                 }
                 newCentroids[i] = newCentroid;
             }
