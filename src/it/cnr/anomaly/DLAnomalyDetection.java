@@ -10,26 +10,20 @@ import java.util.List;
 
 import it.cnr.clustering.Cluster;
 import it.cnr.clustering.QuickKMeans;
-import it.cnr.models.lstm.AnomalyDetectionAutoEncoder;
 import it.cnr.models.lstm.AnomalyDetectionVariationalAutoEncoder;
 import it.cnr.speech.filters.ModulationSpectrogram;
-import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.configuration.AnomalousCryConfiguration;
+import it.cnr.workflow.coroetal2024.staging.AnomalousCryDetector;
 import it.cnr.workflow.utils.SignalProcessing;
 import it.cnr.workflow.utils.UtilsMath;
 import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 
-	public DLAnomalyDetection(WorkflowConfiguration config, File audio) {
-		super(config, audio);
+	public DLAnomalyDetection(File audio) {
+		super(audio);
 	}
 
-	int nEpochs = 1000;
-	
-	int reconstructionNumSamples = 16; // fixed
-	int nhidden = 8;
-	int nClusters = 5;
-	
 	boolean[] isGoodFeature = null;
 	double[] scores = null;
 	int[] clusters = null;
@@ -61,7 +55,7 @@ public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 		
 		QuickKMeans kmeans = new QuickKMeans();
 		File kmfile = new File("clustering.csv");
-		kmeans.kMeans(fm, nClusters, kmfile.getParentFile());
+		kmeans.kMeans(fm, AnomalousCryConfiguration.nClusters4AnomalyDetection, kmfile.getParentFile());
 		
 		clustersOfVAE = new int[scores.length];
 				
@@ -136,9 +130,9 @@ public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 		dae = new AnomalyDetectionVariationalAutoEncoder();//new AnomalyDetectionAutoEncoder();
 		try {
 			System.out.println("Training ...");
-			dae.train(goodMatrix, nhidden, nEpochs);
+			dae.train(goodMatrix, AnomalousCryConfiguration.nhidden, AnomalousCryConfiguration.nEpochs);
 			System.out.println("Testing anomalies ...");
-			dae.test(goodMatrix,reconstructionNumSamples);
+			dae.test(goodMatrix,AnomalousCryConfiguration.reconstructionNumSamples);
 			System.out.println("Clustering anomalies ...");
 			clusterScores(dae.final_scores);
 			System.out.println("Clustering the anomalies done");
@@ -207,14 +201,13 @@ public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 		return selectedM;
 	}
 
-	public void classifyFeatures(double[][] features, File outputFolder, int minClusters, int maxClusters,
-			double entropyThreshold, double lowestEntropyThreshold) throws Exception {
+	public void classifyFeatures(double[][] features) throws Exception {
 		System.out.println("Starting MS filtering for medium entropy energy segments");
 
 		modelData(features);
 
 		int nrow = features.length;
-		int ncol = features[0].length;
+		
 		int hepclid = 1;
 		int lepclid = 0;
 		highriskclusterfound = false;
@@ -224,52 +217,19 @@ public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 		centroid_interpretations = new HashMap<Integer, String>();
 		clusteredFeatures = new LinkedHashMap<Integer, Cluster>();
 		vectorID2ClusterID = new LinkedHashMap<Integer, Integer>();
-		double minEnergyDetected = Double.MAX_VALUE;
-		double maxEnergyDetected = 0;
-		double minEntropyDetected = Double.MAX_VALUE;
-		double maxEntropyDetected = 0;
-		double[] spectralenergy = new double[nrow];
-		double[] spectralentropy = new double[nrow];
-
-		double totalEnergy = 0;
-		for (int i = 0; i < nrow; i++) {
-			double ff[] = features[i];
-			double energy = 0;
-			for (double f : ff) {
-				if (f > 0)
-					energy = energy + f;
-			}
-			// double energy = UtilsMath.sumVector();
-			totalEnergy += energy;
-		}
-
-		double averageEnergy = totalEnergy / (double) nrow;
-		System.out.println("Average Energy " + averageEnergy);
-
+		
 		for (int i = 0; i < nrow; i++) {
 
-			double entropy = UtilsMath.roundDecimal(SignalProcessing.calculateSpectralEntropy(features[i]), 2);
-			// double energy = UtilsMath.roundDecimal(UtilsMath.mean(features[i]),2);
-			double energy = 0;
-			for (double f : features[i]) {
-				if (f > 0)
-					energy = energy + f;
-			}
-
-			double indicator = UtilsMath.roundDecimal(energy * entropy, 2);
-			String centroidIndicator = indicator + " [" + entropy + "/" + energy + "]";
-
-			String entropyInterpretation = " ";
-
+			String interpretation = " ";
 			double time = ModulationSpectrogram.getMSTime(i, ModulationSpectrogram.windowShift);
 
 			if (isAnomaly(features[i],i)) {// 100 precision
-				entropyInterpretation = "Anomalous";
-				if (time<10)
-					System.out.println("ENT:" + time + ":" + centroidIndicator+" S:"+scores[i]);
+				interpretation = "Anomalous";
+				//if (time<10)
+					//System.out.println("ENT:" + time + ":" + centroidIndicator+" S:"+scores[i]);
 				if (!highriskclusterfound) {
 					highriskclusterfound = true;
-					centroid_interpretations.put(hepclid, entropyInterpretation);
+					centroid_interpretations.put(hepclid, interpretation);
 					Cluster c = new Cluster(hepclid, false);
 					clusteredFeatures.put(hepclid, c);
 				}
@@ -282,7 +242,7 @@ public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 
 				if (!lowriskclusterfound) {
 					lowriskclusterfound = true;
-					centroid_interpretations.put(lepclid, entropyInterpretation);
+					centroid_interpretations.put(lepclid, interpretation);
 					Cluster c = new Cluster(lepclid, false);
 					clusteredFeatures.put(lepclid, c);
 				}
@@ -293,18 +253,7 @@ public class DLAnomalyDetection extends MSEnergyEntropyAnomalyDetection {
 				clusteredFeatures.put(lepclid, c);
 			}
 
-			spectralenergy[i] = energy;
-			spectralentropy[i] = entropy;
-
 		}
-
-		System.out.println("Energy detected across the samples:[" + minEnergyDetected + "," + maxEnergyDetected + "]");
-		System.out
-				.println("Entropy detected across the samples:[" + minEntropyDetected + "," + maxEntropyDetected + "]");
-		double[] qene = UtilsMath.quantiles(spectralenergy);
-		double[] qent = UtilsMath.quantiles(spectralentropy);
-		System.out.println("Quartiles of Energy:" + Arrays.toString(qene));
-		System.out.println("Quartiles of Entropy:" + Arrays.toString(qent));
 
 		System.out.println("Number of simulated-clusters identified: " + clusteredFeatures.keySet().size());
 		if (highriskclusterfound)

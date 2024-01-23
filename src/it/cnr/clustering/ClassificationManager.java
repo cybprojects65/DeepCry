@@ -7,15 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.features.CorpusCleaner;
-import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.utils.SignalProcessing;
 import it.cnr.workflow.utils.UtilsMath;
-import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class ClassificationManager extends DetectionManager{
 	
-	public ClassificationManager(WorkflowConfiguration config, File audio) {
-		super(config, audio);
+	public ClassificationManager(File audio) {
+		super(audio);
 	}
 	
 	public void classifyFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold, double lowestEntropyThreshold) throws Exception{

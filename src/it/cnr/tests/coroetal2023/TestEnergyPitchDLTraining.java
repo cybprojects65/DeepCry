@@ -6,7 +6,7 @@ import java.util.List;
 
 import it.cnr.clustering.MultiKMeans;
 import it.cnr.deeplearning.DeepLearningManager;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 
 public class TestEnergyPitchDLTraining {
 
@@ -26,7 +26,7 @@ public class TestEnergyPitchDLTraining {
 		File outputClusteringFile = new File("temp_clustering.bin");
 		MultiKMeans clusterer = MultiKMeans.load(outputClusteringFile);
 		
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 		double[][] featureMatrix = extractor.chunkizeTimeSeries(fold, energyWindow4Analysis, pitchWindow4Analysis, featurewindowsize,featurewindowshift);
 		
 		DeepLearningManager dlo = new DeepLearningManager();

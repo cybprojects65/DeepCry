@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import it.cnr.clustering.MultiKMeans;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 import it.cnr.hmm.HMMManager;
 import it.cnr.models.lstm.DichotomicLSTM;
 import it.cnr.workflow.utils.UtilsVectorMatrix;
@@ -65,7 +65,7 @@ public class DeepLearningManager {
 
 		System.out.println("###RETRIEVING REFERENCE DATA###");
 		File[] references = referenceFolder.listFiles();
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 
 		HashMap<Integer, List<double[]>> features = new HashMap<Integer, List<double[]>>();
 
@@ -108,7 +108,7 @@ public class DeepLearningManager {
 		for (Integer clusterIdx : features.keySet()) {
 			
 					List<double[]> vectors = features.get(clusterIdx);
-					FeatureExtractor fe = new FeatureExtractor();
+					EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor();
 					double average = 0;
 					for (double[] vec:vectors) {
 						double[][] timeSeries = fe.featureToTimeSeries(vec, nFeaturesPerTime);
@@ -172,7 +172,7 @@ public class DeepLearningManager {
 		for (Integer clusterIdx : features.keySet()) {
 			
 					List<double[]> vectors = features.get(clusterIdx);
-					FeatureExtractor fe = new FeatureExtractor();
+					EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor();
 					double average = 0;
 					int ncomparisons = 0;
 					for (double[] vec:vectors) {
@@ -281,7 +281,7 @@ public class DeepLearningManager {
 	
 	public int [] annotate (double[][] featureMatrix, File modelFolder, int nhidden,	int nClasses,	int minibatch,	int nEpochs	) throws Exception{
 	
-		FeatureExtractor fe = new FeatureExtractor();
+		EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor();
 		int [] classifications = new int[featureMatrix.length];
 		
 		DichotomicLSTM lstm = new DichotomicLSTM();
@@ -301,7 +301,7 @@ public class DeepLearningManager {
 	}
 	
 	public File buildTrainingSet(HashMap<Integer, List<double[]>> clusters, int trainingcluster) throws Exception{
-		FeatureExtractor fe = new FeatureExtractor();
+		EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor();
 		List<double[][]> zeroTimeSeries = new ArrayList<>();
 		List<double[][]> oneTimeSeries = new ArrayList<>();
 		
@@ -372,7 +372,7 @@ public class DeepLearningManager {
 				nhidden, nClasses, minibatch, nEpochs);
 
 		//vector to TS 
-		FeatureExtractor fe = new FeatureExtractor();
+		EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor();
 		
 		double[][] timeSeries = fe.featureToTimeSeries(inputvector, nFeaturesPerTime);
 		

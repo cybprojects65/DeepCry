@@ -10,21 +10,6 @@ public class TestAnomalousCryDetector {
 
 	public static void main(String[] args) throws Exception {
 
-		WorkflowConfiguration config = new WorkflowConfiguration();
-
-		config.maxSilence = 0.5f;
-		config.minimumAudioLength = 5f;
-		config.energyWindow4Analysis = 0.1f;
-		config.pitchWindow4Analysis = 0.1f;
-		config.featurewindowsize = 0.3f;
-		config.featurewindowshift = 0.1f;
-		config.minNFeaturesInCluster = 5;
-		config.nClasses = 2;
-		config.nhidden = 3;
-		config.minibatch = 150;
-		config.nEpochs = 2;
-		config.standardiseFeatures = true;
-
 		//several short cry impulses
 		File audio1 = new File("./test_wave_files/Subintensive-annoyed-1child#2-23_01.wav"); //KO //SNR 4.9 duration 16s infant cry contained 0.55s found 0s 
 
@@ -67,7 +52,7 @@ public class TestAnomalousCryDetector {
 		};
 		
 		
-		AnomalousCryDetector cryd = new AnomalousCryDetector(config);
+		AnomalousCryDetector cryd = new AnomalousCryDetector();
 		cryd.run(allAudioToAnalyse);
 	}
 

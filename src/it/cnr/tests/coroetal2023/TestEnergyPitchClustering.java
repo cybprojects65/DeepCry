@@ -8,7 +8,7 @@ import java.util.List;
 import it.cnr.clustering.MultiKMeans;
 import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
 
 public class TestEnergyPitchClustering {
@@ -23,7 +23,7 @@ public class TestEnergyPitchClustering {
 		WorkflowConfiguration c = new WorkflowConfiguration(); 
 		
 		MultiKMeans clusterer = new MultiKMeans();
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 		
 		double[][] featureMatrix = extractor.chunkizeTimeSeries(fold, c.energyWindow4Analysis, c.pitchWindow4Analysis, c.featurewindowsize,c.featurewindowshift);
 		File clusteringFile = clusterer.clusterFeatures(featureMatrix, fold, c.minNFeaturesInCluster);

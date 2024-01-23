@@ -15,15 +15,22 @@ import it.cnr.speech.audiofeatures.SyllabicEnergyPitchExtractor;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.utils.UtilsVectorMatrix;
 
-public class FeatureExtractor {
+public class EnergyPitchFeatureExtractor {
 
 	public double SNR;
-	public WorkflowConfiguration config;
+	//public WorkflowConfiguration config;
+	private double window4Analysis;
 	
-	public FeatureExtractor() {}
+	public EnergyPitchFeatureExtractor() {
+		this.window4Analysis = 0.1;
+	}
 	
-	public FeatureExtractor(WorkflowConfiguration config) {
-		this.config = config;
+	public EnergyPitchFeatureExtractor(double window4Analysis) {
+		this.window4Analysis = window4Analysis;
+	}
+	
+	public EnergyPitchFeatureExtractor(WorkflowConfiguration config) {
+		window4Analysis = config.energyWindow4Analysis;
 	}
 	
 	public double getSNR() {
@@ -70,12 +77,12 @@ public class FeatureExtractor {
 	}
 	
 	public double [] getEnergyFeatures(File audioFile) {
-		return new Energy().energyCurve(config.energyWindow4Analysis, audioFile, true);
+		return new Energy().energyCurve((float)window4Analysis, audioFile, true);
 	}
 	
 	public double [] getPitchFeatures(File audioFile) {
 		PitchExtractor pitchExtr = new PitchExtractor();
-		pitchExtr.setPitchWindowSec(config.pitchWindow4Analysis);
+		pitchExtr.setPitchWindowSec(window4Analysis);
 		pitchExtr.calculatePitch(audioFile.getAbsolutePath());
 		Double [] pitchCurve = pitchExtr.pitchCurve;
 		double pitch [] = new double[pitchCurve.length];

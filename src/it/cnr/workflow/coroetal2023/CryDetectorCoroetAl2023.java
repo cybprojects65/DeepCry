@@ -11,7 +11,7 @@ import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.evaluation.Evaluator;
 import it.cnr.evaluation.Range;
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.utils.SignalProcessing;
@@ -120,7 +120,7 @@ public class CryDetectorCoroetAl2023 {
 	
 	public File[] segmentInputFile(File audio44100Hz) throws Exception {
 
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 
 		// works with 44100 kHz audio
 		File outputFolder = extractor.separateFilesBasedOnEnergy(audio44100Hz, config.maxSilence);
@@ -160,7 +160,7 @@ public class CryDetectorCoroetAl2023 {
 
 	public int clusterAnalysis(File featureFolder) throws Exception {
 		clusterer = new MultiKMeans();
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 		// retrieve the matrix of the features
 		featureMatrix = extractor.chunkizeTimeSeries(featureFolder, config.energyWindow4Analysis,
 				config.pitchWindow4Analysis, config.featurewindowsize, config.featurewindowshift);

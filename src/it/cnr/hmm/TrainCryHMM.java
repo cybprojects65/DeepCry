@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.deeplearning.DeepLearningManager;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
 
 public class TrainCryHMM {
@@ -31,7 +31,7 @@ public class TrainCryHMM {
 		for (Integer i:references.keySet()) {
 			
 			List<double[]> features = references.get(i);
-			FeatureExtractor fe = new FeatureExtractor();
+			EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor();
 			
 			for (double[] f:features) {
 				double[][] timeSeries = fe.featureToTimeSeries(f, nFeaturesPerTime);

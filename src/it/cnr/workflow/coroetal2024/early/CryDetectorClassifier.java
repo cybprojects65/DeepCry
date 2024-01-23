@@ -20,7 +20,7 @@ import it.cnr.clustering.EnergyPitchFilterManager;
 import it.cnr.clustering.MultiKMeans;
 import it.cnr.deeplearning.DeepLearningManager;
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 import it.cnr.features.FeatureSet;
 import it.cnr.features.IslandDetector;
 import it.cnr.models.lstm.DichotomicLSTM;
@@ -82,7 +82,7 @@ public class CryDetectorClassifier {
 		System.out.println("#TONE UNIT SEGMENTATION - END#");
 		// step 2 - extract features
 		System.out.println("#FEATURE EXTRACTION - START#");
-		FeatureExtractor featurer = new FeatureExtractor(config);
+		EnergyPitchFeatureExtractor featurer = new EnergyPitchFeatureExtractor(config);
 		// one row for each frame
 		double featureMatrix[][] = featurer.extractFeatureMatrix(toneUnitCleanedFile, config.standardiseFeatures);
 		System.out.println("#FEATURE EXTRACTION - END#");
@@ -93,7 +93,7 @@ public class CryDetectorClassifier {
 		System.out.println("#CLUSTERING - START#");
 		double[] thresholds = UtilsVectorMatrix.initializeVector(featureMatrix[0].length, 1);
 		for (int tryn = 1; tryn <= maxTriesToFindValidIslandsAndClusters; tryn++) {
-			clustering = new EnergyPitchFilterManager(config, toneUnitCleanedFile);//new DetectionManager(config, toneUnitCleanedFile);
+			clustering = new EnergyPitchFilterManager(toneUnitCleanedFile);//new DetectionManager(config, toneUnitCleanedFile);
 			clustering.detectHighValuedFeatures(featureMatrix, toneUnitCleanedFile.getParentFile(), 1, nClassesDetection, thresholds);
 
 			if (!clustering.highriskclusterfound && tryn == maxTriesToFindValidIslandsAndClusters) {
@@ -162,7 +162,7 @@ public class CryDetectorClassifier {
 		tempConfig.standardiseFeatures = false;
 		DetectionManager clusteringMS = null;
 		for (int tryn = 1; tryn <= maxTriesToFindValidIslandsAndClusters; tryn++) {
-			clusteringMS = new DetectionManager(tempConfig, islandAudio);
+			clusteringMS = new DetectionManager(islandAudio);
 			clusteringMS.detectHighValuedFeatures(mod_spec_features_nodelta_tr, islandAudio.getParentFile(), nClassesDetection, nClassesDetection, q3);
 			File labFile = new File(islandAudio.getAbsolutePath().replace(".wav", "modspeclust.lab"));
 			AudioBits b = new AudioBits(islandAudio);
@@ -225,7 +225,7 @@ public class CryDetectorClassifier {
 	
 	public File toneUnitSegmentation(File audio) throws Exception {
 
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 
 		// works with 44100 kHz audio
 		outputFolder = extractor.separateFilesBasedOnEnergy(audio, config.maxSilence);
@@ -293,7 +293,7 @@ public class CryDetectorClassifier {
 
 		System.out.println("#RUNNING CLASSIFICATION");
 		double [][] msOverallMatrix = UtilsVectorMatrix.traspose(ms.modulationSpectrogram);
-		ClassificationManager classifierMS = new ClassificationManager(config,unifiedAudioFile);
+		ClassificationManager classifierMS = new ClassificationManager(unifiedAudioFile);
 		File labFile = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", ".lab"));
 		//classification clustering 
 		classifierMS.classifyFeatures(msOverallMatrix, mainAudioFolder, nClassesClassification, nClassesClassification, entropyEnergyThr, lowestEntropyEnergyThr);
@@ -385,7 +385,7 @@ public class CryDetectorClassifier {
 		
 		System.out.println("#RUNNING CLASSIFICATION");
 		
-		ClassificationManager classifierMS = new ClassificationManager(config,unifiedAudioFile);
+		ClassificationManager classifierMS = new ClassificationManager(unifiedAudioFile);
 		File labFile = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", ".lab"));
 		//classification clustering 
 		classifierMS.classifyFeatures(msOverallMatrix, mainAudioFolder, nClassesClassification, nClassesClassification, entropyEnergyThr, lowestEntropyEnergyThr);

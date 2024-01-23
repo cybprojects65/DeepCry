@@ -8,6 +8,7 @@ import java.util.List;
 import it.cnr.clustering.DetectionManager;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
+import it.cnr.workflow.configuration.AnomalousCryConfiguration;
 import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.coroetal2024.staging.AnomalousCryDetector;
 import it.cnr.workflow.utils.SignalProcessing;
@@ -15,35 +16,49 @@ import it.cnr.workflow.utils.SignalProcessing;
 public class IslandDetector {
 
 	DetectionManager clustering;
-	WorkflowConfiguration config;
-	File audioFile ; 
+	//WorkflowConfiguration config;
+	File audioFile ;
+	private double window4Analysis; 
 	
 	public IslandDetector(DetectionManager clustering, WorkflowConfiguration config, File audioFile) {
 		
 		this.clustering = clustering;
-		this.config = config;
+		this.window4Analysis = config.energyWindow4Analysis;
 		this.audioFile = audioFile;
 	}
 	
 	public IslandDetector(WorkflowConfiguration config, File audioFile) {
 		
 		this.clustering = null;
-		this.config = config;
+		this.window4Analysis = config.energyWindow4Analysis;
 		this.audioFile = audioFile;
 	}
 	
+	public IslandDetector(double window4Analysis, File audioFile) {
+		
+		this.clustering = null;
+		this.window4Analysis = window4Analysis;
+		this.audioFile = audioFile;
+	}
+
+	public IslandDetector(DetectionManager clustering, double window4Analysis, File audioFile) {
+		
+		this.clustering = clustering;
+		this.window4Analysis = window4Analysis;
+		this.audioFile = audioFile;
+	}
 
 
 	public List<double[]> extendIntervalsThroughEnergyIslands(List<double[]> times) {
 		
-		FeatureExtractor fe = new FeatureExtractor(config);
+		EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor(window4Analysis);
 		double [] energyCurve = fe.getEnergyFeatures(audioFile);
 		
 		List<int[]> timeIndices = new ArrayList<>();
 		for (double [] t:times) {
 			
-			int e0 = (int) Math.floor(t[0]/(double)config.energyWindow4Analysis);
-			int e1 = (int) Math.floor(t[1]/(double)config.energyWindow4Analysis);
+			int e0 = (int) Math.floor(t[0]/window4Analysis);
+			int e1 = (int) Math.floor(t[1]/window4Analysis);
 			int [] newInterval = extendTimeInterval(energyCurve, e0, e1);
 			timeIndices.add(newInterval);
 			
@@ -54,8 +69,8 @@ public class IslandDetector {
 		List<double []> newtimes = new ArrayList<>();
 		for (int []ti:timeIndices) {
 			
-			double t0 = ((double) ti[0]*(double)config.energyWindow4Analysis);
-			double t1 = ((double) ti[1]*(double)config.energyWindow4Analysis);
+			double t0 = ((double) ti[0]*window4Analysis);
+			double t1 = ((double) ti[1]*window4Analysis);
 			double nt [] = {t0,t1};
 			newtimes.add(nt);
 		}
@@ -193,7 +208,7 @@ public class IslandDetector {
 		float sfrequency = bits.getAudioFormat().getSampleRate();
 		bits.ais.close();
 		
-		FeatureExtractor fe = new FeatureExtractor(config);
+		EnergyPitchFeatureExtractor fe = new EnergyPitchFeatureExtractor(window4Analysis);
 		double [] energyCurve = fe.getEnergyFeatures(audioFile);
 		int nfeatures = clustering.vectorID2ClusterID.keySet().size();
 		
@@ -316,8 +331,8 @@ public class IslandDetector {
 			int isl1 = island[1];
 			
 			if (isl0<isl1) {
-				double t0 = ((double) isl0*(double)config.energyWindow4Analysis);
-				double t1 = ((double) isl1*(double)config.energyWindow4Analysis);
+				double t0 = ((double) isl0*window4Analysis);
+				double t1 = ((double) isl1*window4Analysis);
 				int i0 = SignalProcessing.timeToSamples(t0, sfrequency);
 				int i1 = SignalProcessing.timeToSamples(t1, sfrequency);
 				System.out.println("Signal segment n. "+idxIsl+" from "+t0+"s to "+t1+"s");
@@ -326,7 +341,7 @@ public class IslandDetector {
 				totalSamples=totalSamples+subsignal.length;
 				signalIslands.add(subsignal);
 				
-				short silence[] = SignalProcessing.silence(AnomalousCryDetector.silenceSecondsBetweenDetectedHighEnergyPitchSegments, new AudioBits(audioFile).getAudioFormat().getSampleRate());
+				short silence[] = SignalProcessing.silence(AnomalousCryConfiguration.silenceSecondsToAddBetweenDetectedHighEnergyPitchSegments, new AudioBits(audioFile).getAudioFormat().getSampleRate());
 				totalSamples += silence.length;
 				//add silence
 				signalIslands.add(silence);

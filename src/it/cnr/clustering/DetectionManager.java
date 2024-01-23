@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.cnr.features.CorpusCleaner;
-import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.utils.SignalProcessing;
 
 public class DetectionManager {
@@ -16,15 +15,14 @@ public class DetectionManager {
 	public HashMap<Integer, Integer> vectorID2ClusterID; 
 	public HashMap<Integer, double [] > centroids;
 	public HashMap<Integer, String> centroid_interpretations;
-	public WorkflowConfiguration config;
+	//public WorkflowConfiguration config;
 	public File audio;
 	public static String HIGH_EP = "H";
 	public boolean highriskclusterfound = false;
 	public String labels [];
 	public double times[];
 	
-	public DetectionManager(WorkflowConfiguration config, File audio) {
-		this.config = config;
+	public DetectionManager(File audio) {
 		this.audio = audio;
 	}
 	
@@ -37,7 +35,7 @@ public class DetectionManager {
 		//File clusterFile = clusterer.clusterFeatures(features, outputFolder, config.minNFeaturesInCluster,minClusters,maxClusters);
 		
 		QuickKMeans cl = new QuickKMeans();
-		File clusterFile = cl.kMeans(features,maxClusters , outputFolder);
+		File clusterFile = cl.kMeans(features, maxClusters , outputFolder);
 		
 		clusteredFeatures = new HashMap<Integer, Cluster>();
 		vectorID2ClusterID = new HashMap<Integer, Integer>();
@@ -108,9 +106,9 @@ public class DetectionManager {
 		
 	}
 	
-	
+	/*
 	public File toLab() throws Exception{
-		double times[] = SignalProcessing.featureTimesInSec(config.energyWindow4Analysis,audio);
+		double times[] = SignalProcessing.featureTimesInSec(window4Analysis,audio);
 		int nfeatures = vectorID2ClusterID.keySet().size();
 		String labels [] = new String[times.length];
 		for (int i=0;i<nfeatures;i++) {
@@ -125,7 +123,7 @@ public class DetectionManager {
 		return outputFile;
 		
 	}
-	
+	*/
 	
 	public File toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec) throws Exception{
 		

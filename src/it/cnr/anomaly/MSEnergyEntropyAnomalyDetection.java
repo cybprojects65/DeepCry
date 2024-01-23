@@ -8,17 +8,16 @@ import java.util.LinkedHashMap;
 import it.cnr.clustering.ClassificationManager;
 import it.cnr.clustering.Cluster;
 import it.cnr.speech.filters.ModulationSpectrogram;
-import it.cnr.workflow.configuration.WorkflowConfiguration;
 import it.cnr.workflow.utils.SignalProcessing;
 import it.cnr.workflow.utils.UtilsMath;
 
 public class MSEnergyEntropyAnomalyDetection extends ClassificationManager{
 	
-	public MSEnergyEntropyAnomalyDetection(WorkflowConfiguration config, File audio) {
-		super(config, audio);
+	public MSEnergyEntropyAnomalyDetection(File audio) {
+		super(audio);
 	}
 
-	public void classifyFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double entropyThreshold, double lowestEntropyThreshold) throws Exception{
+	public void classifyFeatures(double [][] features, double lowEnergy, double highEnergy, double lowEntropy, double highEntropy) throws Exception{
 		System.out.println("Starting MS filtering for medium entropy energy segments");
 
 		int nrow = features.length;
@@ -81,7 +80,8 @@ public class MSEnergyEntropyAnomalyDetection extends ClassificationManager{
 					) { //100% precision
 				*/
 			//if (energy> 166 && energy<167 && entropy > 1.05 && entropy < 1.4) {//100 precision
-			if (energy> 166 && energy<167 && entropy > 0 && entropy < 1.4) {//100 precision
+			//if (energy> 166 && energy<167 && entropy > 0 && entropy < 1.4) {//100 precision
+			if (energy> lowEnergy && energy<highEnergy && entropy > lowEntropy && entropy < highEntropy) {//100 precision
 				entropyInterpretation = "Anomalous";
 				System.out.println("ENT:"+time+":"+centroidIndicator);
 				if (!highriskclusterfound) {

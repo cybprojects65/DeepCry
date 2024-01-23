@@ -13,57 +13,33 @@ import it.cnr.clustering.ClassificationManager;
 import it.cnr.clustering.DetectionManager;
 import it.cnr.clustering.EnergyPitchFilterManager;
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 import it.cnr.features.FeatureSet;
 import it.cnr.features.IslandDetector;
 import it.cnr.speech.audiofeatures.AudioBits;
 import it.cnr.speech.audiofeatures.AudioWaveGenerator;
 import it.cnr.speech.filters.ModulationSpectrogram;
-import it.cnr.workflow.configuration.WorkflowConfiguration;
+import it.cnr.workflow.configuration.AnomalousCryConfiguration;
 import it.cnr.workflow.utils.SignalProcessing;
 import it.cnr.workflow.utils.UtilsObjects;
 import it.cnr.workflow.utils.UtilsVectorMatrix;
 
 public class AnomalousCryDetector {
 
-	public WorkflowConfiguration config;
 	int signalLengthUnifiedFileInMS; 
     int samplingFreqUnifiedFile;
     double[] classificationTimeRanges;
     String[] classificationLabels;
     
-	// ################CRY DETECTION PARAMETERS
-    public double minimumScaledEnergyPitch = 0d;//-0.5d;
-    public static double silenceSecondsBetweenDetectedHighEnergyPitchSegments=0.1; 
-	public int maxTriesToFindValidIslandsAndClusters = 5;
-	public double reductionFactor4Retry = 0.3;
-	public double minimumMSContinuosWindowDetection = 0.5; // seconds
-	public int nClassesDetection = 10;
-	public int numberOfMSFeatures4Detection = 15;
-
-	//################CRY CLASSIFICATION PARAMETERS
-	public int nClassesClassification = 20; //20
-	public double entropyEnergyThr = 32;//40;//35;//32;//26;
-	public double lowestEntropyEnergyThr = 18;
-	public double minimumMSContinuosWindowClassification = 0.0250;//0.0125;//0.200;//0.220 //seconds
-	public int numberOfMSFeatures4Classification = 8;
-	public double maxFrequencyForClassification = 3000;
-	public static double silenceSecondsBetweenAnomalousCrySamples4Reporting=0.2; 
 	
-	//################TEST PARAMETERS
-	public static boolean skippreprocessing = false;
-	public static boolean useDLClassification = true;
 	
-	public AnomalousCryDetector(WorkflowConfiguration config) {
-		this.config = config;
+	public AnomalousCryDetector() {
+		
 	}
 
 	public File run(File allAudiotoAnalyse[]) throws Exception {
 
-		List<File> analysedFiles = new ArrayList<>();
-		
-		
-		if(!skippreprocessing) {
+		if(!AnomalousCryConfiguration.skippreprocessing) {
 		System.out.println("#################################################");
 		System.out.println("######### PROCESSING INDIVIDUAL FILES ###########");
 		System.out.println("#################################################");
@@ -75,7 +51,7 @@ public class AnomalousCryDetector {
 			System.out.println("#1- TONE UNIT SEGMENTATION - END#");
 			// 2 - energy/pitch feature extration at 100ms
 			System.out.println("#2 - ENERGY/PITCH FEATURE EXTRACTION - START#");
-			FeatureExtractor featurer = new FeatureExtractor(config);
+			EnergyPitchFeatureExtractor featurer = new EnergyPitchFeatureExtractor(AnomalousCryConfiguration.window4EnergyPitchFeatures);
 			// one row for each frame
 			double featureMatrix[][] = featurer.extractFeatureMatrix(toneUnitCleanedFile, true);
 			System.out.println("#2 - ENERGY/PITCH FEATURE EXTRACTION - END#");
@@ -86,8 +62,8 @@ public class AnomalousCryDetector {
 			// 4 - energy island identification
 			if (clustering != null) {
 				System.out.println("#4 - ENERGY ISLAND DETECTION - START#");
-				IslandDetector islandDetector = new IslandDetector(clustering, config, toneUnitCleanedFile);
-				File islandAudio = islandDetector.detectIslands();
+				IslandDetector islandDetector = new IslandDetector(clustering, AnomalousCryConfiguration.window4EnergyPitchFeatures, toneUnitCleanedFile);
+				islandDetector.detectIslands();
 				System.out.println("#4 - ENERGY ISLAND DETECTION - END#");
 			}
 			
@@ -106,12 +82,12 @@ public class AnomalousCryDetector {
 		
 		System.out.println("#6 - CALCULATING LOW FREQUENCY MODULATION SPECTROGRAM - START#");
 		double [][] msOverallMatrix = null;
-		if (!skippreprocessing) {
+		if (!AnomalousCryConfiguration.skippreprocessing) {
 			System.out.println("Unified file is "+unifiedAudioFile.getAbsolutePath());
 			ModulationSpectrogram ms = new ModulationSpectrogram();
 			boolean saturateMagnitudeDBs = true;
 			boolean addDeltas = false;
-			ms.calcMS(unifiedAudioFile, msCSVFile, saturateMagnitudeDBs, addDeltas, numberOfMSFeatures4Classification, maxFrequencyForClassification);
+			ms.calcMS(unifiedAudioFile, msCSVFile, saturateMagnitudeDBs, addDeltas,AnomalousCryConfiguration.numberOfMSFeatures,AnomalousCryConfiguration.maxMSFrequency);
 			System.out.println("#6 - CALCULATING LOW FREQUENCY MODULATION SPECTROGRAM - END#");
 			//FROM rows = features ; columns = observations -> rows = observations ; columns = features
 			msOverallMatrix = UtilsVectorMatrix.traspose(ms.modulationSpectrogram);
@@ -122,14 +98,14 @@ public class AnomalousCryDetector {
 		
 		System.out.println("#7 - CLASSIFICATION OF LOW FREQUENCY MODULATION SPECTROGRAM - START#");
 		ClassificationManager classifierMS = null;
-		if (!useDLClassification) {
-			classifierMS = new MSEnergyEntropyAnomalyDetection(config,unifiedAudioFile);
-			classifierMS.classifyFeatures(msOverallMatrix, unifiedAudioFile.getParentFile(), nClassesClassification, nClassesClassification, 
-				entropyEnergyThr, lowestEntropyEnergyThr);
+		if (!AnomalousCryConfiguration.useDLClassification) {
+			MSEnergyEntropyAnomalyDetection classifierMSEE = new MSEnergyEntropyAnomalyDetection(unifiedAudioFile);
+			classifierMSEE.classifyFeatures(msOverallMatrix,AnomalousCryConfiguration.lowEnergy, AnomalousCryConfiguration.highEnergy, AnomalousCryConfiguration.lowEntropy, AnomalousCryConfiguration.highEntropy);
+			classifierMS = classifierMSEE; 
 		}else {
-			classifierMS = new DLAnomalyDetection(config,unifiedAudioFile);
-			classifierMS.classifyFeatures(msOverallMatrix, unifiedAudioFile.getParentFile(), nClassesClassification, nClassesClassification, 
-				entropyEnergyThr, lowestEntropyEnergyThr);
+			DLAnomalyDetection classifierMSDL = new DLAnomalyDetection(unifiedAudioFile);
+			classifierMSDL.classifyFeatures(msOverallMatrix);
+			classifierMS = classifierMSDL;
 		}
 		System.out.println("#7 - CLASSIFICATION OF LOW FREQUENCY MODULATION SPECTROGRAM - END#");
 		
@@ -139,7 +115,7 @@ public class AnomalousCryDetector {
 		
 		if (classifierMS.highriskclusterfound) {
 			System.out.println("#9 - EXTEND THE CLASSIFIED SEGMENTS - START#");
-			File finalLabFile = extendAnnotationThroughEnergyIslands(msOverallMatrix, classifierMS.times, classifierMS.labels, unifiedAudioFile);
+			extendAnnotationThroughEnergyIslands(msOverallMatrix, classifierMS.times, classifierMS.labels, unifiedAudioFile);
 			System.out.println("#9 - EXTEND THE CLASSIFIED SEGMENTS - END#");
 			System.out.println("#10 - SAVING DETECTED ANOMALOUS CRY IN A SEPARATE FILE - START#");
 			File mod_spec_audio = new File(unifiedAudioFile.getAbsolutePath().replace(".wav", "_anomalouscry.wav"));
@@ -165,12 +141,12 @@ public class AnomalousCryDetector {
 		ab.ais.close();
 		int signalLengthMS = totalSamples / ModulationSpectrogram.reductionFactor;
 		int samplingFreqMS = (int) (ab.getAudioFormat().getSampleRate() / ModulationSpectrogram.reductionFactor);
-		classifierMS.toLabCTC(rawLabFile, samplingFreqMS, signalLengthMS, windowShiftMS, minimumMSContinuosWindowClassification);
+		classifierMS.toLabCTC(rawLabFile, samplingFreqMS, signalLengthMS, windowShiftMS,AnomalousCryConfiguration.minimumContinuousAnomalousSegment4Classification);
 		return classifierMS;
 	}
 	
 	public static void saveNonEmptyAnnotatedSignal(File outputAudiofile, File inputAudioReference, double [] times, String [] labels) throws Exception{
-		short[] reducedsignalMS = SignalProcessing.extractAnnotatedSignal(inputAudioReference, times,labels,silenceSecondsBetweenAnomalousCrySamples4Reporting);
+		short[] reducedsignalMS = SignalProcessing.extractAnnotatedSignal(inputAudioReference, times,labels,AnomalousCryConfiguration.silenceSecondsToAddBetweenAnomalousCrySamples4Reporting);
 		System.out.println("Saving annotated audio segments");
 		AudioWaveGenerator.generateWaveFromSamplesWithSameFormat(reducedsignalMS, outputAudiofile,
 			new AudioBits(inputAudioReference).getAudioFormat());
@@ -179,7 +155,7 @@ public class AnomalousCryDetector {
 	public File extendAnnotationThroughEnergyIslands(double [][] msOverallMatrix, double classificationtimes[], String [] classificationlabels, File  unifiedAudioFile) throws Exception{
 		
 		FeatureSet fs = FeatureSet.fromModulationSpectrogram(msOverallMatrix, classificationtimes, classificationlabels, ModulationSpectrogram.windowShift);
-		IslandDetector id = new IslandDetector(config, unifiedAudioFile);
+		IslandDetector id = new IslandDetector(AnomalousCryConfiguration.window4EnergyPitchFeatures, unifiedAudioFile);
 		List<double []> times = id.extendIntervalsThroughEnergyIslands(fs.timeIntervals);
 		
 		List<Double> timesN = new ArrayList<>();
@@ -248,7 +224,7 @@ public class AnomalousCryDetector {
 			totalSamples += sig.length;
 			signals.add(sig);
 			
-			short silence[] = SignalProcessing.silence(config.maxSilence, af.getSampleRate());
+			short silence[] = SignalProcessing.silence(AnomalousCryConfiguration.maxSilence4ToneUnitSelection, af.getSampleRate());
 			totalSamples += silence.length;
 			//add silence
 			signals.add(silence);
@@ -275,23 +251,22 @@ public class AnomalousCryDetector {
 
 	public DetectionManager clusterFeaturesForDetection(double[][] featureMatrix, File toneUnitCleanedFile)
 			throws Exception {
-		DetectionManager clustering = null;
+		EnergyPitchFilterManager clustering = null;
 
-		double[] thresholds = UtilsVectorMatrix.initializeVector(featureMatrix[0].length, minimumScaledEnergyPitch);
-		for (int tryn = 1; tryn <= maxTriesToFindValidIslandsAndClusters; tryn++) {
+		double[] thresholds = UtilsVectorMatrix.initializeVector(featureMatrix[0].length,AnomalousCryConfiguration.minimumScaledEnergyPitch);
+		for (int tryn = 1; tryn <= AnomalousCryConfiguration.maxTriesToFindValidIslandsAndClusters; tryn++) {
 
-			clustering = new EnergyPitchFilterManager(config, toneUnitCleanedFile);
-			clustering.detectHighValuedFeatures(featureMatrix, toneUnitCleanedFile.getParentFile(), 1, nClassesDetection,
-					thresholds);
+			clustering = new EnergyPitchFilterManager(toneUnitCleanedFile);
+			clustering.detectHighValuedFeatures(featureMatrix, thresholds);
 
-			if (!clustering.highriskclusterfound && tryn == maxTriesToFindValidIslandsAndClusters) {
+			if (!clustering.highriskclusterfound && tryn == AnomalousCryConfiguration.maxTriesToFindValidIslandsAndClusters) {
 				System.out.println("A HIGH-VALUED CLUSTER WAS NOT FOUND - INFANT CRY POSSIBLY ABSENT!");
 				return (null);
 			} else if (!clustering.highriskclusterfound) {
 				System.out.println(
 						"A HIGH-VALUED CLUSTER WAS NOT FOUND - INFANT CRY POSSIBLY ABSENT - RETRYING WITH THRESHOLDS REDUCED - RETRY N. "
 								+ tryn);
-				thresholds = UtilsVectorMatrix.reduceVectorValues(thresholds, reductionFactor4Retry);
+				thresholds = UtilsVectorMatrix.reduceVectorValues(thresholds, AnomalousCryConfiguration.reductionFactor4Retry);
 				System.out.println("New thresholds: " + Arrays.toString(thresholds));
 			} else {
 				System.out.println("A HIGH-VALUED CLUSTER WAS FOUND");
@@ -304,10 +279,10 @@ public class AnomalousCryDetector {
 	}
 
 	public File toneUnitSegmentation(File audio) throws Exception {
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor(AnomalousCryConfiguration.window4EnergyPitchFeatures);
 		// works with 44100 kHz audio
-		File outputFolder = extractor.separateFilesBasedOnEnergy(audio, config.maxSilence);
-		CorpusCleaner.deleteShortAudio(outputFolder, config.minimumAudioLength);
+		File outputFolder = extractor.separateFilesBasedOnEnergy(audio, (float) AnomalousCryConfiguration.maxSilence4ToneUnitSelection);
+		CorpusCleaner.deleteShortAudio(outputFolder,AnomalousCryConfiguration.minimumAudioLength4ToneUnitSelection);
 		System.out.println("SNR " + extractor.SNR);
 		File outputCleanedFile = CorpusCleaner.unifyToneUnitsIntoOneFile(outputFolder, audio);
 		return outputCleanedFile;

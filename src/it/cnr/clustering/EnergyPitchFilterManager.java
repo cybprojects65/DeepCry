@@ -4,16 +4,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import it.cnr.workflow.configuration.WorkflowConfiguration;
-
 public class EnergyPitchFilterManager extends DetectionManager{
 	
 	
-	public EnergyPitchFilterManager(WorkflowConfiguration config, File audio) {
-		super(config,audio);
+	public EnergyPitchFilterManager(File audio) {
+		super(audio);
 	}
 	
-	public void detectHighValuedFeatures(double [][] features, File outputFolder, int minClusters, int maxClusters, double[] thresholdPerFeature) throws Exception{
+	public void detectHighValuedFeatures(double [][] features, double[] thresholdPerFeature) throws Exception{
 		System.out.println("Starting energy-pitch filtering");
 		int nrow = features.length;
 		int ncol = features[0].length;

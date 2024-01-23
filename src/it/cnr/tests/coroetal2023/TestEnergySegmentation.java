@@ -3,7 +3,7 @@ package it.cnr.tests.coroetal2023;
 import java.io.File;
 
 import it.cnr.features.CorpusCleaner;
-import it.cnr.features.FeatureExtractor;
+import it.cnr.features.EnergyPitchFeatureExtractor;
 
 public class TestEnergySegmentation {
 
@@ -17,7 +17,7 @@ public class TestEnergySegmentation {
 		float featurewindowsize = 1; //s 
 		int minNFeaturesInCluster = 2;
 		
-		FeatureExtractor extractor = new FeatureExtractor();
+		EnergyPitchFeatureExtractor extractor = new EnergyPitchFeatureExtractor();
 		
 		//works with 44100 kHz audio
 		File outputFolder = extractor.separateFilesBasedOnEnergy(audio, maxSilence);
