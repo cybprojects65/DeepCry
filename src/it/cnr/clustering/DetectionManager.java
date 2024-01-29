@@ -128,10 +128,10 @@ public class DetectionManager {
 	public File toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec) throws Exception{
 		
 		//toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, String [] labels) throws Exception{
-		double times[] = SignalProcessing.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
+		times = SignalProcessing.featureTimesInSec(windowLengthSec,samplingFrequency,signalLength);
 		int nfeatures = vectorID2ClusterID.keySet().size();
 		
-		String labels [] = new String[times.length];
+		labels = new String[times.length];
 		for (int i=0;i<nfeatures;i++) {
 			Integer id = i;
 			Integer clusterID = vectorID2ClusterID.get(id);
@@ -142,13 +142,62 @@ public class DetectionManager {
 			labels[i] = interpretation; 
 		}
 		
-		CorpusCleaner.vector2LabFile(labels, times,outputFile);
+		if(outputFile!=null)
+			CorpusCleaner.vector2LabFile(labels, times,outputFile);
 		
 		return outputFile;
 		
 	}
 	
+	public List<double[]> getTimes(int samplingFrequency, int signalLength, double windowLengthSec) throws Exception{
+		
+		toLab(null,samplingFrequency,  signalLength,  windowLengthSec);
+		List<double[]> timeList = new ArrayList<double[]>();
+		for (int i=0;i<(times.length-1);i++) {
+			double t0 = times[i];
+			double t1 = times[i+1];
+			String label = labels[i];
+			label = label.trim();
+			if (label.length()>0) {
+				double[] timeInt = {t0,t1};
+				timeList.add(timeInt);
+			}
+		}
+		return timeList;
+	}
 	
+	public static void toLab(File outputFile, List<double[]> times) throws Exception{
+		List<Double> timesN = new ArrayList<>();
+		List<String> labelsN = new ArrayList<>();
+		timesN.add(0d);
+		labelsN.add("");
+		  
+		for (double [] tint : times) {
+			  
+			  double t0 = tint[0];
+			  double t1 = tint[1];
+			  String l = "A";
+			  timesN.add(t0);
+			  labelsN.add(l);
+			  timesN.add(t1);
+			  labelsN.add("");
+			  
+		  }
+		  
+		  double[] classificationTimeRanges = new double[timesN.size()];
+		  for (Integer h = 0; h <classificationTimeRanges.length;h++) {
+			  classificationTimeRanges[h] = timesN.get(h);
+		  }
+
+		  String[] classificationLabels = new String[labelsN.size()];
+
+		  for (Integer h = 0; h <classificationLabels.length;h++) {
+			  classificationLabels[h] = labelsN.get(h);
+		  }
+		  
+		  CorpusCleaner.vector2LabFile(classificationLabels, classificationTimeRanges, outputFile);
+	}
+
 	public File toLabCTC(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, double minLabelTimeSec) throws Exception{
 		
 		//toLab(File outputFile, int samplingFrequency, int signalLength, double windowLengthSec, String [] labels) throws Exception{
